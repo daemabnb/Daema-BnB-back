@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "start": "tsc && node ./dist/bin/www",
-    "test": "mocha --require ts-node/register ./src/routes/**/*.spec.ts",
+    "test": "mocha --require ts-node/register ./src/test/*.spec.ts",
     "lint": "tslint -p ."
   },
   "devDependencies": {
