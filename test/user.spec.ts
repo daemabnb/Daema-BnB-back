@@ -11,7 +11,7 @@ describe('user test', () => {
   it('POST /user/authemail', async () => {
     await req
       .post('/user/authemail')
-      .send({ email: 'abcd1234' })
+      .send({ email: 'nye7181' })
       .expect(201)
-  })
+  }).timeout(15000)
 })
