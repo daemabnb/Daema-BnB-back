@@ -17,4 +17,8 @@ const postAuthemail = async (req: express.Request, res: express.Response): Promi
   }
 }
 
-export { postAuthemail }
+const postSignin = async (req: express.Request, res: express.Response): Promise<void> => {
+
+}
+
+export { postAuthemail, postSignin }

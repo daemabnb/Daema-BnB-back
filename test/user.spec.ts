@@ -1,10 +1,26 @@
 import * as request from 'supertest'
+import sinon, { SinonSandbox } from 'sinon'
 import app from '../src/app'
+import { User } from '../src/model/user'
 
 describe('user test', () => {
+  let sandbox
   let req
 
   before(() => {
+    sandbox = sinon.createSandbox()
+    sandbox.stub(User, 'find').value(() => {
+      return new Promise((resolve) => {
+        resolve({
+          id: 'abcd1234',
+          email: 'abcd1234@dsm.hs.kr',
+          userLink: 'http://aaaaaaaaaaa.com',
+          createdAt: 1555938705534,
+          updatedAt: 1555938705534
+        })
+      })
+    })
+
     req = request(app)
   })
 
@@ -14,4 +30,10 @@ describe('user test', () => {
       .send({ email: 'nye7181' })
       .expect(201)
   }).timeout(15000)
+
+  it('POST /user/signin', async () => {
+    await req
+      .post('/user/signin')
+      .expect(201)
+  })
 })
