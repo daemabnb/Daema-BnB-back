@@ -29,8 +29,9 @@ describe('user test', () => {
     })
   })
 
-  after(() => {
+  after((done) => {
     sandbox.restore()
+    done()
   })
 
   it('POST /user/signup', async () => {
