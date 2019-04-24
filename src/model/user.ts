@@ -4,7 +4,7 @@ interface UserFormat extends Document {
   id: string,
   displayName: string,
   email: string,
-  userLink: string,
+  profileUrl: string,
   isAdmin: boolean,
   createdAt: Date,
   updatedAt: Date
@@ -24,7 +24,7 @@ const UserSchema: Schema = new Schema({
     type: String,
     required: true
   },
-  userLink: {
+  profileUrl: {
     type: String,
     required: true
   },
