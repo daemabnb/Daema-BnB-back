@@ -1,13 +1,36 @@
 import * as passport from 'passport'
 import { Strategy } from 'passport-facebook'
+import { config } from 'dotenv'
+import { User, UserFormat } from '../model/user'
 
-const facebookStrategy = new Strategy({
-  clientID: '856575621215696',
-  clientSecret: '094dea82ccbec5780ce891ca5eca963a',
-  callbackURL: 'http://localhost:3000/auth/facebook/callback'
-}, (accessToken, refreshToken, profile, done) => {
-  console.log(profile)
-  done(null, profile)
+config()
+
+const facebookOptions = {
+  clientID: process.env.FACEBOOK_CLIENT_ID as string,
+  clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
+  callbackURL: '/user/signin/facebook/callback'
+}
+
+const facebookStrategy = new Strategy(facebookOptions, async (accessToken, refreshToken, profile, done) => {
+  try {
+    const user: UserFormat = await User.findOne().where('id').exec() as UserFormat
+
+    if (user) {
+      const { email, displayName, isAdmin } = user
+      const userInfo = {
+        email,
+        displayName,
+        isAdmin,
+        accessToken: accessToken
+      }
+
+      done(null, true, userInfo)
+    } else {
+      done(null, false, accessToken)
+    }
+  } catch (e) {
+    done(e, null)
+  }
 })
 
 passport.use(facebookStrategy)

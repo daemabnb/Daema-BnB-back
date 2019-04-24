@@ -1,10 +1,10 @@
 import * as request from 'supertest'
-import sinon, { SinonSandbox } from 'sinon'
+import * as sinon from 'sinon'
 import app from '../src/app'
 import { User } from '../src/model/user'
 
 describe('user test', () => {
-  let sandbox
+  let sandbox: sinon.SinonSandbox
   let req
 
   before(() => {
@@ -30,10 +30,4 @@ describe('user test', () => {
       .send({ email: 'nye7181' })
       .expect(201)
   }).timeout(15000)
-
-  it('POST /user/signin', async () => {
-    await req
-      .post('/user/signin')
-      .expect(201)
-  })
 })
