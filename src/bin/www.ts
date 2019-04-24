@@ -8,7 +8,7 @@ config()
 const keyPath = process.env.KEY_PATH as string
 const certPath = process.env.CERT_PATH as string
 
-const options = {
+const spdyOptions = {
   key: readFileSync(keyPath),
   cert: readFileSync(certPath),
   protocol: ['h2']
@@ -16,4 +16,4 @@ const options = {
 
 const PORT = process.env.PORT || 3000
 
-createServer(options, app).listen(PORT, () => console.log('start'))
+createServer(spdyOptions, app).listen(PORT, () => console.log('start'))

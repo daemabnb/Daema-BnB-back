@@ -1,9 +1,23 @@
-import * as mongoose from 'mongoose'
+import { Schema, Model, Document, model } from 'mongoose'
 
-const UserSchema: mongoose.Schema = new mongoose.Schema({
+interface UserFormat extends Document {
+  id: string,
+  displayName: string,
+  email: string,
+  userLink: string,
+  isAdmin: boolean,
+  createdAt: Date,
+  updatedAt: Date
+}
+
+const UserSchema: Schema = new Schema({
   id: {
     type: String,
     unique: true,
+    required: true
+  },
+  displayName: {
+    type: String,
     required: true
   },
   email: {
@@ -13,6 +27,10 @@ const UserSchema: mongoose.Schema = new mongoose.Schema({
   userLink: {
     type: String,
     required: true
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   },
   createdAt: {
     type: Date,
@@ -24,6 +42,6 @@ const UserSchema: mongoose.Schema = new mongoose.Schema({
   }
 })
 
-const User = mongoose.model('User', UserSchema)
+const User: Model<UserFormat> = model<UserFormat>('User', UserSchema)
 
-export { User }
+export { User, UserFormat }
