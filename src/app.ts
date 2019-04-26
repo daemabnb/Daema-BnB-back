@@ -1,14 +1,11 @@
 import * as mongoose from 'mongoose'
 import * as express from 'express'
-import { config } from 'dotenv'
+import { mongoUri } from './config'
 import logger from './util/logger'
 import router from './routes/index'
 import passport from './util/passport'
 import Err from './util/error'
 
-config()
-
-const mongoUri = process.env.MONGO_URI as string
 const mongooseOptions: mongoose.ConnectionOptions = {
   useNewUrlParser: true
 }
