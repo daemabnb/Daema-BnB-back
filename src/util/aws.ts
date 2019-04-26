@@ -1,8 +1,6 @@
 import * as AWS from 'aws-sdk'
 import { Types } from 'mongoose'
-import { config } from 'dotenv'
-
-config()
+import { accessKey, secretAccessKey } from '../config'
 
 interface SignedUrlParams {
   Key: string
@@ -16,9 +14,6 @@ enum ImageType {
 }
 
 const s3: AWS.S3 = new AWS.S3()
-
-const accessKey = process.env.ACCESS_KEY as string
-const secretAccessKey = process.env.SECRET_ACCESS_KEY as string
 
 const region = 'ap-northeast-2'
 const bucketName = 'daemabnb-image'

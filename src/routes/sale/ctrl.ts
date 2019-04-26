@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
-import { getUploadUrl, getDownloadUrl, ImageType } from '../../util/aws'
+import { getUploadUrl, ImageType } from '../../util/aws'
 import { Sale, SaleFormat } from '../../model/sale'
 
 const postSale = async (req: Request, res: Response, next: NextFunction) => {
