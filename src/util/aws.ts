@@ -10,9 +10,9 @@ interface SignedUrlParams {
   Expires: number
 }
 
-interface SaleImageFormat {
-  fileName: string
-  saleId: Types.ObjectId
+enum ImageType {
+  Sale = 'sale',
+  Share = 'share'
 }
 
 const s3: AWS.S3 = new AWS.S3()
@@ -37,18 +37,18 @@ const getParams = (key: string, bucket: string = bucketName, expires: number = 6
   }
 }
 
-const getUploadUrl = (params: SaleImageFormat[]): string[] => {
-  return params.map(param => {
-    const filePath = `${param.saleId}/${param.fileName}`
+const getUploadUrl = (imageType: ImageType, id: Types.ObjectId, images: string[]): string[] => {
+  return images.map(image => {
+    const filePath = `${imageType}/${id}/${image}`
     return s3.getSignedUrl('putObject', getParams(filePath))
   })
 }
 
-const getDownloadUrl = (params: SaleImageFormat[]): string[] => {
-  return params.map(param => {
-    const filePath = `${param.saleId}/${param.fileName}`
+const getDownloadUrl = (imageType: ImageType, id: Types.ObjectId, images: string[]): string[] => {
+  return images.map(image => {
+    const filePath = `${imageType}/${id}/${image}`
     return s3.getSignedUrl('getObject', getParams(filePath))
   })
 }
 
-export { getUploadUrl, getDownloadUrl, SaleImageFormat }
+export { getUploadUrl, getDownloadUrl, ImageType }

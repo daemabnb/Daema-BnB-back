@@ -1,7 +1,9 @@
 import * as request from 'supertest'
 import * as sinon from 'sinon'
+import { Types } from 'mongoose'
 import app from '../src/app'
 import { createToken } from '../src/util/jwt'
+import * as aws from '../src/util/aws'
 import { Sale } from '../src/model/sale'
 
 describe('user test', () => {
@@ -11,14 +13,20 @@ describe('user test', () => {
 
   before(() => {
     req = request(app)
-    tokenWithoutEmail = createToken('abcd1234', 'nye', 'http://localhost:3000')
+    tokenWithoutEmail = createToken('abcd1234', 'nye', 'http://localhost:3000', 'nye@gmail.com')
 
     sandbox = sinon.createSandbox()
 
     sandbox.stub(Sale.prototype, 'save').value(() => {
       return new Promise((resolve) => {
-        resolve()
+        resolve({
+          _id: Types.ObjectId('abcdefghijkl')
+        })
       })
+    })
+
+    sandbox.stub(aws, 'getUploadUrl').value(() => {
+      return ['sale/abcdefghijkl/a.jpg']
     })
   })
 
@@ -34,7 +42,8 @@ describe('user test', () => {
       .send({
         itemName: '물건',
         itemDescription: '물건의 설명',
-        itemPrice: '2000'
+        itemPrice: '2000',
+        images: ['a.jpg']
       })
   })
 })

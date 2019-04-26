@@ -5,7 +5,7 @@ interface SaleFormat extends Document {
   description: string
   price: number
   status: string
-  imagePath: Array<string>
+  images: Array<string>
   userId: Types.ObjectId
   userName: string
   userLink: string
@@ -32,7 +32,7 @@ const SaleSchema: Schema = new Schema({
     type: String,
     default: '판매 중'
   },
-  imagePath: {
+  images: {
     type: [
       String
     ],
