@@ -1,10 +1,6 @@
 import * as jwt from 'jsonwebtoken'
 import { Request, Response, NextFunction, RequestHandler } from 'express'
-import { config } from 'dotenv'
-
-config()
-
-const jwtSecret: jwt.Secret = process.env.JWT_SECRET as string
+import { jwtSecret } from '../config'
 
 const jwtOptions: jwt.SignOptions = {
   expiresIn: '7d'

@@ -1,7 +1,5 @@
 import * as nodemailer from 'nodemailer'
-import { config } from 'dotenv'
-
-config()
+import { emailId, emailPw } from '../config'
 
 const mailer = async (email: string): Promise<string> => {
   const authNum = createAuthNum()
@@ -13,13 +11,13 @@ const mailer = async (email: string): Promise<string> => {
   const transporter: nodemailer.Transporter = nodemailer.createTransport({
     service: MAIL_SERVICE,
     auth: {
-      user: process.env.EMAIL_ID,
-      pass: process.env.EMAIL_PW
+      user: emailId,
+      pass: emailPw
     }
   })
 
   const mailOptions = {
-    from: process.env.EMAIL_ID,
+    from: emailId,
     to: `${email}${DSM_MAIL}`,
     subject: SUBJECT,
     text: TEXT

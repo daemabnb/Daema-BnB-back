@@ -1,9 +1,7 @@
 import * as passport from 'passport'
 import { Strategy } from 'passport-facebook'
-import { config } from 'dotenv'
+import { clientID, clientSecret } from '../config'
 import { User, UserFormat } from '../model/user'
-
-config()
 
 class UserInfo {
   id: string
@@ -24,8 +22,8 @@ class UserInfo {
 }
 
 const facebookOptions = {
-  clientID: process.env.FACEBOOK_CLIENT_ID as string,
-  clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
+  clientID,
+  clientSecret,
   callbackURL: '/user/signin/facebook/callback'
 }
 
