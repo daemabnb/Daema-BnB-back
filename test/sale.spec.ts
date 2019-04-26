@@ -8,12 +8,12 @@ import { Sale } from '../src/model/sale'
 
 describe('user test', () => {
   let req: request.SuperTest<request.Test>
-  let tokenWithoutEmail: string
+  let token: string
   let sandbox: sinon.SinonSandbox
 
   before(() => {
     req = request(app)
-    tokenWithoutEmail = createToken('abcd1234', 'nye', 'http://localhost:3000', 'nye@gmail.com')
+    token = createToken('abcd1234', 'nye', 'http://localhost:3000', 'nye@gmail.com')
 
     sandbox = sinon.createSandbox()
 
@@ -21,6 +21,14 @@ describe('user test', () => {
       return new Promise((resolve) => {
         resolve({
           _id: Types.ObjectId('abcdefghijkl')
+        })
+      })
+    })
+
+    sandbox.stub(Sale, 'findById').value(() => {
+      return new Promise((resolve) => {
+        resolve({
+          _id: 'abcdefghijkl'
         })
       })
     })
@@ -38,12 +46,18 @@ describe('user test', () => {
   it('POST /sale', async () => {
     await req
       .post('/sale').expect(201)
-      .set('token', tokenWithoutEmail)
+      .set('token', token)
       .send({
         itemName: '물건',
         itemDescription: '물건의 설명',
         itemPrice: '2000',
         images: ['a.jpg']
       })
+  })
+
+  it('GET /sale/{id}', async () => {
+    await req
+      .get('/sale/abcdefghijkl').expect(200)
+      .set('token', token)
   })
 })

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { getUploadUrl, ImageType } from '../../util/aws'
 import { Sale, SaleFormat } from '../../model/sale'
 
-const postSale = async (req: Request, res: Response, next: NextFunction) => {
+const postSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { itemName, itemDescription, itemPrice, images } = req.body
   const { id, displayName, profileUrl } = req.user
 
@@ -27,4 +27,8 @@ const postSale = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
-export { postSale }
+const getDetailSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+}
+
+export { postSale, getDetailSale }
