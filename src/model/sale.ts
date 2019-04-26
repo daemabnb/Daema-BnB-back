@@ -22,7 +22,7 @@ const SaleSchema: Schema = new Schema({
     required: true
   },
   description: {
-    type: String,
+    type: String
   },
   price: {
     type: String,
