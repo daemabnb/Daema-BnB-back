@@ -41,13 +41,15 @@ const getDetailSale: RequestHandler = async (req: Request, res: Response, next: 
       throw new Err('이것은 너의 게시물이 아니다. 저리 가!', 403)
     }
 
+    const downloadUrls: string[] = getDownloadUrl(ImageType.Sale,_id, images as string[])
+
     res.status(200).json({
       itemId: _id,
       itemName: name,
       itemDescription: description,
       itemPrice: price,
       saleStatus: status,
-      itemImagePath: getDownloadUrl(ImageType.Sale,_id, images as string[]),
+      itemImagePath: downloadUrls,
       isFree: price === '0' ? true : false,
       userId: userId,
       userName: userName,

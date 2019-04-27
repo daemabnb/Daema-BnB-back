@@ -34,7 +34,8 @@ describe('user test', () => {
           price: '5000',
           userId: 'abcd1234',
           userName: 'nye',
-          userLink: 'http://localhost:3000'
+          userLink: 'http://localhost:3000',
+          images: ['a.jpg']
         })
       })
     })
