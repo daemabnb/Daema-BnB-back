@@ -18,7 +18,7 @@ class DB {
     return Sale.findById(saleId).exec()
   }
 
-  updateSale(saleId: string, sale: SaleDocument): Promise<number> {
+  updateSale(saleId: string, sale: ISale): Promise<number> {
     return Sale.updateOne({ _id: saleId }, sale).exec()
   }
 }

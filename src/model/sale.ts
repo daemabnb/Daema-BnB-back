@@ -5,7 +5,7 @@ interface ISale {
   description: string
   price: string
   status?: string
-  images: string[]
+  images?: string[]
   userId: string
   userName: string
   userLink: string

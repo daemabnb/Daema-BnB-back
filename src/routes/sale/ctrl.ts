@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
-import { getUploadUrl, ImageType } from '../../util/aws'
+import { getUploadUrl, getDownloadUrl, ImageType } from '../../util/aws'
 import Err from '../../util/error'
 import DB, { SaleDocument } from '../../model/index'
 
@@ -47,7 +47,7 @@ const getDetailSale: RequestHandler = async (req: Request, res: Response, next: 
       itemDescription: description,
       itemPrice: price,
       saleStatus: status,
-      itemImagePath: images,
+      itemImagePath: getDownloadUrl(ImageType.Sale,_id, images as string[]),
       isFree: price === '0' ? true : false,
       userId: userId,
       userName: userName,
@@ -59,7 +59,52 @@ const getDetailSale: RequestHandler = async (req: Request, res: Response, next: 
 }
 
 const putSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const itemId = req.params.id
+  const { itemName, itemDescription, itemPrice, addImages, deleteImages }:
+    { itemName: string, itemDescription: string, itemPrice: string, addImages: string[], deleteImages: string[] }
+    = req.body
+  const { id, displayName, profileUrl } = req.user
 
+  try {
+    const sale = await db.findSaleById(itemId)
+
+    if (sale === null) {
+      throw new Err('존재하지 않는 id입니다.', 405)
+    }
+
+    const images: string[] = sale.images as string[]
+    const newImages = getNewImages(images, addImages, deleteImages)
+
+    await db.updateSale(itemId, {
+      name: itemName,
+      description: itemDescription,
+      price: itemPrice,
+      userId: id,
+      userName: displayName,
+      userLink: profileUrl,
+      images: newImages
+    })
+
+    res.status(204).end()
+  } catch (e) {
+    next(e)
+  }
+}
+
+const getNewImages = (images: string[], addImages: string[], deleteImages: string[]): string[] => {
+  deleteImages.forEach(deleteImg => {
+    const index = images.indexOf(deleteImg)
+
+    if (index === -1) {
+      throw new Err('잘못된 이미지 삭제', 405)
+    }
+
+    images.splice(index, 1)
+  })
+
+  images.push(...addImages)
+
+  return images
 }
 
 export { postSale, getDetailSale, putSale }
