@@ -29,7 +29,7 @@ const facebookOptions = {
 
 const facebookStrategy = new Strategy(facebookOptions, async (accessToken, refreshToken, profile, done) => {
   try {
-    const user: UserFormat = await User.findOne().where('id').exec() as UserFormat
+    const user: UserFormat = await User.findOne({ id: profile.id }).exec() as UserFormat
 
     if (user) {
       const { id, email, profileUrl, displayName, isAdmin } = user
