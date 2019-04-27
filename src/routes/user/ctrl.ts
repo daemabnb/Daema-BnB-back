@@ -1,10 +1,12 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
-import { User, UserFormat } from '../../model/user'
+import DB, { UserDocument } from '../../model/index'
 import mailer from '../../util/mailer'
 import * as redis from '../../util/redis'
 import passport from '../../util/passport'
 import { createToken } from '../../util/jwt'
 import logger from '../../util/logger'
+
+const db: DB = new DB()
 
 const postAuthemail: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { email } = req.body
@@ -59,14 +61,13 @@ const postSignup: RequestHandler = async (req: Request, res: Response, next: Nex
     }
 
     const { id, displayName, profileUrl } = req.user
-    const user: UserFormat = new User({
-      id,
+
+    await db.createUser({
+      profileId: id,
       displayName,
       email,
       profileUrl
     })
-
-    await user.save()
 
     const token = createToken(id, displayName, profileUrl, email)
 

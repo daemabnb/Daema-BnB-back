@@ -1,20 +1,17 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { getUploadUrl, ImageType } from '../../util/aws'
 import Err from '../../util/error'
-import { Sale, SaleFormat } from '../../model/sale'
+import DB, { SaleDocument } from '../../model/index'
 
-enum SaleStatus {
-  OnSale = '판매 중',
-  BeforeExchage = '교환 전',
-  CompleteSale = '판매 완료'
-}
+const db: DB = new DB()
 
 const postSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { itemName, itemDescription, itemPrice, images } = req.body
+  const { itemName, itemDescription, itemPrice, images }:
+    {itemName: string, itemDescription: string, itemPrice: string, images: string[]} = req.body
   const { id, displayName, profileUrl } = req.user
 
   try {
-    const newSale: SaleFormat = new Sale({
+    const sale = await db.createSale({
       name: itemName,
       description: itemDescription,
       price: itemPrice,
@@ -23,8 +20,6 @@ const postSale: RequestHandler = async (req: Request, res: Response, next: NextF
       userName: displayName,
       userLink: profileUrl
     })
-
-    const sale: SaleFormat = await newSale.save()
 
     const urls = getUploadUrl(ImageType.Sale, sale._id, images)
 
@@ -39,8 +34,7 @@ const getDetailSale: RequestHandler = async (req: Request, res: Response, next: 
   const { id } = req.user
 
   try {
-    const sale: SaleFormat = await Sale.findById(itemId).exec() as SaleFormat
-
+    const sale: SaleDocument = await db.findSaleById(itemId) as SaleDocument
     const { _id, name, description, price, status, images, userId, userName, userLink } = sale
 
     if (id !== userId) {
@@ -54,7 +48,7 @@ const getDetailSale: RequestHandler = async (req: Request, res: Response, next: 
       itemPrice: price,
       saleStatus: status,
       itemImagePath: images,
-      isFree: price === 0 ? true : false,
+      isFree: price === '0' ? true : false,
       userId: userId,
       userName: userName,
       userLink: userLink

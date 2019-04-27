@@ -4,7 +4,7 @@ import { Types } from 'mongoose'
 import app from '../src/app'
 import { createToken } from '../src/util/jwt'
 import * as aws from '../src/util/aws'
-import { Sale } from '../src/model/sale'
+import DB from '../src/model/index'
 
 describe('user test', () => {
   let req: request.SuperTest<request.Test>
@@ -17,40 +17,32 @@ describe('user test', () => {
 
     sandbox = sinon.createSandbox()
 
-    sandbox.stub(Sale.prototype, 'save').value(() => {
-      return new Promise((resolve) => {
+    sandbox.stub(DB.prototype, 'createSale').value(() => {
+      return new Promise(resolve => {
         resolve({
           _id: Types.ObjectId('abcdefghijkl')
         })
       })
     })
 
-    sandbox.stub(Sale, 'findOne').value(() => {
-      return {
-        exec() {
-          return new Promise((resolve) => {
-            resolve({
-              _id: 'abcdefghijkl',
-              name: 'item',
-              description: 'itemssss',
-              price: '5000',
-              userId: 'abcd1234',
-              userName: 'nye',
-              userLink: 'http://localhost:3000'
-            })
-          })
-        }
-      }
+    sandbox.stub(DB.prototype, 'findSaleById').value(() => {
+      return new Promise(resolve => {
+        resolve({
+          _id: 'abcdefghijkl',
+          name: 'item',
+          description: 'itemssss',
+          price: '5000',
+          userId: 'abcd1234',
+          userName: 'nye',
+          userLink: 'http://localhost:3000'
+        })
+      })
     })
 
-    sandbox.stub(Sale, 'update').value(() => {
-      return {
-        exec() {
-          return new Promise(resolve => {
-            resolve()
-          })
-        }
-      }
+    sandbox.stub(DB.prototype, 'updateSale').value(() => {
+      return new Promise(resolve => {
+        resolve()
+      })
     })
 
     sandbox.stub(aws, 'getUploadUrl').value(() => {

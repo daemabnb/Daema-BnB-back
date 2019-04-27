@@ -1,7 +1,7 @@
 import * as passport from 'passport'
 import { Strategy } from 'passport-facebook'
 import { clientID, clientSecret } from '../config'
-import { User, UserFormat } from '../model/user'
+import { User, UserDocument } from '../model/user'
 
 class UserInfo {
   id: string
@@ -29,7 +29,7 @@ const facebookOptions = {
 
 const facebookStrategy = new Strategy(facebookOptions, async (accessToken, refreshToken, profile, done) => {
   try {
-    const user: UserFormat = await User.findOne({ id: profile.id }).exec() as UserFormat
+    const user: UserDocument = await User.findOne({ id: profile.id }).exec() as UserDocument
 
     if (user) {
       const { id, email, profileUrl, displayName, isAdmin } = user

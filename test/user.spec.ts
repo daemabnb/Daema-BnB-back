@@ -3,7 +3,7 @@ import * as sinon from 'sinon'
 import app from '../src/app'
 import { createToken } from '../src/util/jwt'
 import * as redis from '../src/util/redis'
-import { User } from '../src/model/user'
+import DB from '../src/model/index'
 
 describe('user test', () => {
   let req: request.SuperTest<request.Test>
@@ -17,13 +17,13 @@ describe('user test', () => {
     sandbox = sinon.createSandbox()
 
     sandbox.stub(redis, 'getAuthNumber').value(() => {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         resolve('1234')
       })
     })
 
-    sandbox.stub(User.prototype, 'save').value(() => {
-      return new Promise((resolve) => {
+    sandbox.stub(DB.prototype, 'createUser').value(() => {
+      return new Promise(resolve => {
         resolve()
       })
     })

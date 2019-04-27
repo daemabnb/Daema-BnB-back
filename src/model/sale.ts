@@ -1,20 +1,22 @@
 import { Schema, Model, Document, model, Types } from 'mongoose'
 
-interface SaleFormat extends Document {
+interface ISale {
   name: string
   description: string
-  price: number
-  status: string
-  images: Array<string>
-  userId: Types.ObjectId
+  price: string
+  status?: string
+  images: string[]
+  userId: string
   userName: string
   userLink: string
-  clientId: Types.ObjectId
-  clientName: string
-  clientLink: string
-  createdAt: Date
-  updatedAt: Date
+  clientId?: string
+  clientName?: string
+  clientLink?: string
+  createdAt?: Date
+  updatedAt?: Date
 }
+
+interface SaleDocument extends Document, ISale {}
 
 const SaleSchema: Schema = new Schema({
   name: {
@@ -39,16 +41,19 @@ const SaleSchema: Schema = new Schema({
     default: []
   },
   userId: {
-    type: Types.ObjectId
+    type: String,
+    required: true
   },
   userName: {
-    type: String
+    type: String,
+    required: true
   },
   userLink: {
-    type: String
+    type: String,
+    required: true
   },
   clientId: {
-    type: Types.ObjectId
+    type: String
   },
   clientName: {
     type: String
@@ -66,6 +71,6 @@ const SaleSchema: Schema = new Schema({
   }
 })
 
-const Sale: Model<SaleFormat> = model<SaleFormat>('Sale', SaleSchema)
+const Sale: Model<SaleDocument> = model<SaleDocument>('Sale', SaleSchema)
 
-export { Sale, SaleFormat }
+export { Sale, ISale, SaleDocument }

@@ -1,17 +1,19 @@
 import { Schema, Model, Document, model } from 'mongoose'
 
-interface UserFormat extends Document {
-  id: string,
+interface IUser {
+  profileId: string,
   displayName: string,
   email: string,
   profileUrl: string,
-  isAdmin: boolean,
-  createdAt: Date,
-  updatedAt: Date
+  isAdmin?: boolean,
+  createdAt?: Date,
+  updatedAt?: Date
 }
 
+interface UserDocument extends Document, IUser {}
+
 const UserSchema: Schema = new Schema({
-  id: {
+  profileId: {
     type: String,
     unique: true,
     required: true
@@ -42,6 +44,6 @@ const UserSchema: Schema = new Schema({
   }
 })
 
-const User: Model<UserFormat> = model<UserFormat>('User', UserSchema)
+const User: Model<UserDocument> = model<UserDocument>('User', UserSchema)
 
-export { User, UserFormat }
+export { User, IUser, UserDocument }
