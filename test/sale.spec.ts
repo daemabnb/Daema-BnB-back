@@ -46,6 +46,12 @@ describe('user test', () => {
       })
     })
 
+    sandbox.stub(DB.prototype, 'deleteSale').value(() => {
+      return new Promise(resolve => {
+        resolve()
+      })
+    })
+
     sandbox.stub(aws, 'getUploadUrl').value(() => {
       return ['sale/abcdefghijkl/a.jpg']
     })
@@ -85,5 +91,11 @@ describe('user test', () => {
         addImages: ['b.jpg'],
         deleteImages: ['a.jpg']
       })
+  })
+
+  it('DELETE /sale/{id}', async () => {
+    await req
+      .delete('/sale/abcdefghijkl').expect(204)
+      .set('token', token)
   })
 })

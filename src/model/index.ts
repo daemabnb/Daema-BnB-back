@@ -21,6 +21,10 @@ class DB {
   updateSale(saleId: string, sale: ISale): Promise<number> {
     return Sale.updateOne({ _id: saleId }, sale).exec()
   }
+
+  deleteSale(saleId: string): Promise<{}> {
+    return Sale.deleteOne({ _id: saleId }).exec()
+  }
 }
 
 export default DB
