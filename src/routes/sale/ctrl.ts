@@ -64,4 +64,8 @@ const getDetailSale: RequestHandler = async (req: Request, res: Response, next: 
   }
 }
 
-export { postSale, getDetailSale }
+const putSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+}
+
+export { postSale, getDetailSale, putSale }

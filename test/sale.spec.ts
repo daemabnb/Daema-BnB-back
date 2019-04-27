@@ -4,7 +4,7 @@ import { Types } from 'mongoose'
 import app from '../src/app'
 import { createToken } from '../src/util/jwt'
 import * as aws from '../src/util/aws'
-import { Sale, SaleFormat } from '../src/model/sale'
+import { Sale } from '../src/model/sale'
 
 describe('user test', () => {
   let req: request.SuperTest<request.Test>
@@ -43,6 +43,16 @@ describe('user test', () => {
       }
     })
 
+    sandbox.stub(Sale, 'update').value(() => {
+      return {
+        exec() {
+          return new Promise(resolve => {
+            resolve()
+          })
+        }
+      }
+    })
+
     sandbox.stub(aws, 'getUploadUrl').value(() => {
       return ['sale/abcdefghijkl/a.jpg']
     })
@@ -69,5 +79,18 @@ describe('user test', () => {
     await req
       .get('/sale/abcdefghijkl').expect(200)
       .set('token', token)
+  })
+
+  it('PUT /sale/{id}', async () => {
+    await req
+      .put('/sale/abcdefghijkl').expect(204)
+      .set('token', token)
+      .send({
+        itemName: '물건',
+        itemDescription: '물건의 설명',
+        itemPrice: '3000',
+        addImages: ['b.jpg'],
+        deleteImages: ['a.jpg']
+      })
   })
 })
