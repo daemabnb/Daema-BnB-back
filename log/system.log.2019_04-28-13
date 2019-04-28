@@ -1,0 +1,9 @@
+[Sun Apr 28 2019 13:38:53 GMT+0900 (GMT+09:00)] error: Error: 이것은 너의 게시물이 아니다. 저리 가!
+    at verifySale (D:\works\daemabnb\develop\Daema-BnB-back\src\routes\sale\ctrl.ts:20:13)
+    at process._tickCallback (internal/process/next_tick.js:68:7)
+[Sun Apr 28 2019 13:38:53 GMT+0900 (GMT+09:00)] error: Error: 이것은 너의 게시물이 아니다. 저리 가!
+    at verifySale (D:\works\daemabnb\develop\Daema-BnB-back\src\routes\sale\ctrl.ts:20:13)
+    at process._tickCallback (internal/process/next_tick.js:68:7)
+[Sun Apr 28 2019 13:38:53 GMT+0900 (GMT+09:00)] error: Error: 이것은 너의 게시물이 아니다. 저리 가!
+    at verifySale (D:\works\daemabnb\develop\Daema-BnB-back\src\routes\sale\ctrl.ts:20:13)
+    at process._tickCallback (internal/process/next_tick.js:68:7)

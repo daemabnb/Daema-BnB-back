@@ -14,12 +14,20 @@ class DB {
     return new Sale(sale).save()
   }
 
+  findOwnSales(userId: string, skip: number, limit: number): Promise<SaleDocument[]> {
+    return Sale.find({ userId }).skip(skip).limit(limit).exec()
+  }
+
   findSaleById(saleId: string): Promise<SaleDocument | null> {
     return Sale.findById(saleId).exec()
   }
 
   updateSale(saleId: string, sale: ISale): Promise<number> {
     return Sale.updateOne({ _id: saleId }, sale).exec()
+  }
+
+  deleteSale(saleId: string): Promise<{}> {
+    return Sale.deleteOne({ _id: saleId }).exec()
   }
 }
 

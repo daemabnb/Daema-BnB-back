@@ -1,9 +1,32 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { getUploadUrl, getDownloadUrl, ImageType } from '../../util/aws'
 import Err from '../../util/error'
-import DB, { SaleDocument } from '../../model/index'
+import DB from '../../model/index'
 
 const db: DB = new DB()
+
+const verifySale: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+  const itemId = req.params.id
+  const userId = req.user.id
+
+  try {
+    const sale = await db.findSaleById(itemId)
+
+    if (sale === null) {
+      throw new Err('존재하지 않는 sale id', 405)
+    }
+
+    if (sale.userId !== userId) {
+      throw new Err('너거 아니니까 저리 가!', 403)
+    }
+
+    req.sale = sale
+
+    next()
+  } catch (e) {
+    next(e)
+  }
+}
 
 const postSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { itemName, itemDescription, itemPrice, images }:
@@ -30,16 +53,10 @@ const postSale: RequestHandler = async (req: Request, res: Response, next: NextF
 }
 
 const getDetailSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const itemId = req.params.id
-  const { id } = req.user
-
   try {
-    const sale: SaleDocument = await db.findSaleById(itemId) as SaleDocument
-    const { _id, name, description, price, status, images, userId, userName, userLink } = sale
+    const { _id, name, description, price, status, images, userId, userName, userLink } = req.sale
 
-    if (id !== userId) {
-      throw new Err('이것은 너의 게시물이 아니다. 저리 가!', 403)
-    }
+    const downloadUrls: string[] = getDownloadUrl(ImageType.Sale,_id, images as string[])
 
     res.status(200).json({
       itemId: _id,
@@ -47,7 +64,7 @@ const getDetailSale: RequestHandler = async (req: Request, res: Response, next: 
       itemDescription: description,
       itemPrice: price,
       saleStatus: status,
-      itemImagePath: getDownloadUrl(ImageType.Sale,_id, images as string[]),
+      itemImagePath: downloadUrls,
       isFree: price === '0' ? true : false,
       userId: userId,
       userName: userName,
@@ -66,11 +83,7 @@ const putSale: RequestHandler = async (req: Request, res: Response, next: NextFu
   const { id, displayName, profileUrl } = req.user
 
   try {
-    const sale = await db.findSaleById(itemId)
-
-    if (sale === null) {
-      throw new Err('존재하지 않는 id입니다.', 405)
-    }
+    const sale = req.sale
 
     const images: string[] = sale.images as string[]
     const newImages = getNewImages(images, addImages, deleteImages)
@@ -86,6 +99,41 @@ const putSale: RequestHandler = async (req: Request, res: Response, next: NextFu
     })
 
     res.status(204).end()
+  } catch (e) {
+    next(e)
+  }
+}
+
+const deleteSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const itemId = req.params.id
+
+  try {
+    await db.deleteSale(itemId)
+
+    res.status(204).end()
+  } catch (e) {
+    next(e)
+  }
+}
+
+const getSaleHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+  const { offset, limit } = req.query
+  const userId = req.user.id
+
+  try {
+    const sales = await db.findOwnSales(userId, parseInt(offset, 10), parseInt(limit, 10))
+
+    const responseSales = sales.map(sale => {
+      return {
+        itemName: sale.name,
+        itemDescription: sale.description,
+        saleStatus: sale.status,
+        registerDate: sale.createdAt,
+        saledDate: sale.selledDate
+      }
+    })
+
+    res.status(200).json(responseSales).end()
   } catch (e) {
     next(e)
   }
@@ -107,4 +155,4 @@ const getNewImages = (images: string[], addImages: string[], deleteImages: strin
   return images
 }
 
-export { postSale, getDetailSale, putSale }
+export { verifySale, postSale, getDetailSale, putSale, deleteSale, getSaleHistory }

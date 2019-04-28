@@ -34,12 +34,19 @@ describe('user test', () => {
           price: '5000',
           userId: 'abcd1234',
           userName: 'nye',
-          userLink: 'http://localhost:3000'
+          userLink: 'http://localhost:3000',
+          images: ['a.jpg']
         })
       })
     })
 
     sandbox.stub(DB.prototype, 'updateSale').value(() => {
+      return new Promise(resolve => {
+        resolve()
+      })
+    })
+
+    sandbox.stub(DB.prototype, 'deleteSale').value(() => {
       return new Promise(resolve => {
         resolve()
       })
@@ -84,5 +91,17 @@ describe('user test', () => {
         addImages: ['b.jpg'],
         deleteImages: ['a.jpg']
       })
+  })
+
+  it('DELETE /sale/{id}', async () => {
+    await req
+      .delete('/sale/abcdefghijkl').expect(204)
+      .set('token', token)
+  })
+
+  it('GET /sale/history', async () => {
+    await req
+      .get('/sale/history?offset=0&limit=5').expect(200)
+      .set('token', token)
   })
 })
