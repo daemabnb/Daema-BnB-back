@@ -64,7 +64,7 @@ const getDetailSale: RequestHandler = async (req: Request, res: Response, next: 
       itemDescription: description,
       itemPrice: price,
       saleStatus: status,
-      itemImagePath: downloadUrls,
+      itemImages: downloadUrls,
       isFree: price === '0' ? true : false,
       userId: userId,
       userName: userName,
