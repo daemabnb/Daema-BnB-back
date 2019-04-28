@@ -5,6 +5,7 @@ import logger from './util/logger'
 import router from './routes/index'
 import passport from './util/passport'
 import Err from './util/error'
+import { SaleDocument } from './model/index'
 
 const mongooseOptions: mongoose.ConnectionOptions = {
   useNewUrlParser: true
@@ -13,6 +14,12 @@ const mongooseOptions: mongoose.ConnectionOptions = {
 mongoose.connect(mongoUri, mongooseOptions)
   .then(() => logger.info('connected mongoose'))
   .catch((e: Err) => logger.error(e.stack as string))
+
+declare module 'express' {
+  interface Request {
+    sale: SaleDocument
+  }
+}
 
 const app: express.Application = express()
 
