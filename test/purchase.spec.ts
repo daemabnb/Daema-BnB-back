@@ -38,4 +38,10 @@ describe('purchase test', () => {
       .get('/purchase').expect(200)
       .set('token', token)
   })
+
+  it('GET /purchase/{id}', async () => {
+    await req
+      .get('/purchase/abcdefghijkl').expect(200)
+      .set('token', token)
+  })
 })

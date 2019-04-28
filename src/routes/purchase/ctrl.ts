@@ -30,4 +30,8 @@ const getPurchase: RequestHandler = async (req: Request, res: Response, next: Ne
   }
 }
 
-export { getPurchase }
+const getPurchaseDetail: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
+
+}
+
+export { getPurchase, getPurchaseDetail }
