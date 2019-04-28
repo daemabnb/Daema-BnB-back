@@ -116,6 +116,10 @@ const deleteSale: RequestHandler = async (req: Request, res: Response, next: Nex
   }
 }
 
+const getSaleHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+
+}
+
 const getNewImages = (images: string[], addImages: string[], deleteImages: string[]): string[] => {
   deleteImages.forEach(deleteImg => {
     const index = images.indexOf(deleteImg)
@@ -132,4 +136,4 @@ const getNewImages = (images: string[], addImages: string[], deleteImages: strin
   return images
 }
 
-export { verifySale, postSale, getDetailSale, putSale, deleteSale }
+export { verifySale, postSale, getDetailSale, putSale, deleteSale, getSaleHistory }

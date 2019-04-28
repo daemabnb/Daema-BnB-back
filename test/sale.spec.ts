@@ -98,4 +98,10 @@ describe('user test', () => {
       .delete('/sale/abcdefghijkl').expect(204)
       .set('token', token)
   })
+
+  it('GET /sale/history', async () => {
+    await req
+      .get('/sale/history?offset=0&limit=5').expect(200)
+      .set('token', token)
+  })
 })

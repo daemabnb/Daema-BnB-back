@@ -8,5 +8,6 @@ saleRouter.post('/', verifyToken, ctrl.postSale)
   .get('/:id', verifyToken, ctrl.verifySale, ctrl.getDetailSale)
   .put('/:id', verifyToken, ctrl.verifySale, ctrl.putSale)
   .delete('/:id', verifyToken, ctrl.verifySale, ctrl.deleteSale)
+  .get('/history', verifyToken, ctrl.getSaleHistory)
 
 export default saleRouter
