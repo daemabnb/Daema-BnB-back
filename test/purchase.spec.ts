@@ -14,6 +14,19 @@ describe('purchase test', () => {
     token = createToken('abcd1234', 'nye', 'http://localhost:3000', 'nye@gmail.com')
 
     sandbox = sinon.createSandbox()
+
+    sandbox.stub(DB.prototype, 'findSales').value(() => {
+      return new Promise(resolve => {
+        resolve(
+          [{
+            _id: 'abcdefghijkl',
+            naem: '물건',
+            price: '5000',
+            images: ['a.jpg', 'b.jpg']
+          }]
+        )
+      })
+    })
   })
 
   after(() => {

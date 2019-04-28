@@ -14,6 +14,10 @@ class DB {
     return new Sale(sale).save()
   }
 
+  findSales(skip: number, limit: number): Promise<SaleDocument[]> {
+    return Sale.find().skip(skip).limit(limit).exec()
+  }
+
   findOwnSales(userId: string, skip: number, limit: number): Promise<SaleDocument[]> {
     return Sale.find({ userId }).skip(skip).limit(limit).exec()
   }
