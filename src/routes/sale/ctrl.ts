@@ -93,8 +93,27 @@ const putSale: RequestHandler = async (req: Request, res: Response, next: NextFu
   }
 }
 
-const deleteSale: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
+const deleteSale: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+  const itemId = req.params.id
+  const userId = req.user.id
 
+  try {
+    const sale = await db.findSaleById(itemId)
+
+    if (sale === null) {
+      throw new Err('존재하지 않는 saleId', 405)
+    }
+
+    if (sale.userId !== userId) {
+      throw new Err('니거 아니니까 저리가', 403)
+    }
+
+    await db.deleteSale(itemId)
+
+    res.status(204).end()
+  } catch (e) {
+    next(e)
+  }
 }
 
 const getNewImages = (images: string[], addImages: string[], deleteImages: string[]): string[] => {
