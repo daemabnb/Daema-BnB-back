@@ -1,4 +1,4 @@
-import { Schema, Model, Document, model, Types } from 'mongoose'
+import { Schema, Model, Document, model } from 'mongoose'
 
 interface ISale {
   name: string
@@ -12,6 +12,7 @@ interface ISale {
   clientId?: string
   clientName?: string
   clientLink?: string
+  selledDate?: Date
   createdAt?: Date
   updatedAt?: Date
 }
@@ -60,6 +61,9 @@ const SaleSchema: Schema = new Schema({
   },
   clientLink: {
     type: String
+  },
+  selledDate: {
+    type: Date
   },
   createdAt: {
     type: Date,

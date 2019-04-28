@@ -117,7 +117,26 @@ const deleteSale: RequestHandler = async (req: Request, res: Response, next: Nex
 }
 
 const getSaleHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+  const { offset, limit } = req.query
+  const userId = req.user.id
 
+  try {
+    const sales = await db.findOwnSales(userId, parseInt(offset, 10), parseInt(limit, 10))
+
+    const responseSales = sales.map(sale => {
+      return {
+        itemName: sale.name,
+        itemDescription: sale.description,
+        saleStatus: sale.status,
+        registerDate: sale.createdAt,
+        saledDate: sale.selledDate
+      }
+    })
+
+    res.status(200).json(responseSales).end()
+  } catch (e) {
+    next(e)
+  }
 }
 
 const getNewImages = (images: string[], addImages: string[], deleteImages: string[]): string[] => {
