@@ -35,11 +35,18 @@ describe('purchase test', () => {
           name: 'item',
           description: 'itemssss',
           price: '5000',
+          status: 'onSale',
           userId: 'abcd1234',
           userName: 'nye',
           userLink: 'http://localhost:3000',
           images: ['a.jpg']
         })
+      })
+    })
+
+    sandbox.stub(DB.prototype, 'updateSaleStatus').value(() => {
+      return new Promise(resolve => {
+        resolve()
       })
     })
   })

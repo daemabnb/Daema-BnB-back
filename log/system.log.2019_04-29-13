@@ -10,3 +10,5 @@
     at tryOnImmediate (timers.js:676:5)
     at processImmediate (timers.js:658:5)
     at process.topLevelDomainCallback (domain.js:120:23)
+[Mon Apr 29 2019 13:58:26 GMT+0900 (GMT+09:00)] info: connected mongoose
+[Mon Apr 29 2019 13:59:14 GMT+0900 (GMT+09:00)] info: connected mongoose

@@ -1,6 +1,12 @@
 import { User, IUser, UserDocument } from './user'
 import { Sale, ISale, SaleDocument } from './sale'
 
+enum SaleStatus {
+  onSale = 'onSale',
+  beforeExchage = 'beforeExchage',
+  selled = 'selled'
+}
+
 class DB {
   createUser(user: IUser): Promise<UserDocument> {
     return new User(user).save()
@@ -33,7 +39,13 @@ class DB {
   deleteSale(saleId: string): Promise<{}> {
     return Sale.deleteOne({ _id: saleId }).exec()
   }
+
+  updateSaleStatus(saleId: string, status: string): Promise<number> {
+    return Sale.updateOne({ _id: saleId }, {
+      $set: { status }
+    }).exec()
+  }
 }
 
 export default DB
-export { UserDocument, SaleDocument }
+export { UserDocument, SaleDocument, SaleStatus }
