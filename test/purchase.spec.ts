@@ -27,6 +27,21 @@ describe('purchase test', () => {
         )
       })
     })
+
+    sandbox.stub(DB.prototype, 'findSaleById').value(() => {
+      return new Promise(resolve => {
+        resolve({
+          _id: 'abcdefghijkl',
+          name: 'item',
+          description: 'itemssss',
+          price: '5000',
+          userId: 'abcd1234',
+          userName: 'nye',
+          userLink: 'http://localhost:3000',
+          images: ['a.jpg']
+        })
+      })
+    })
   })
 
   after(() => {

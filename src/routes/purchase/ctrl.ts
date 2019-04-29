@@ -1,8 +1,27 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { getDownloadUrl, ImageType } from '../../util/aws'
+import Err from '../../util/error'
 import DB from '../../model/index'
 
 const db: DB = new DB()
+
+const verifyPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const itemId = req.params.id
+
+  try {
+    const sale = await db.findSaleById(itemId)
+
+    if (sale === null) {
+      throw new Err('존재하지 않는 sale id', 405)
+    }
+
+    req.sale = sale
+
+    next()
+  } catch (e) {
+    next(e)
+  }
+}
 
 const getPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { offset, limit } = req.query
@@ -30,8 +49,23 @@ const getPurchase: RequestHandler = async (req: Request, res: Response, next: Ne
   }
 }
 
-const getPurchaseDetail: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
+const getDetailPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const { _id, name, description, price, status, images, userId, userName, userLink } = req.sale
 
+  const downloadUrls: string[] = getDownloadUrl(ImageType.Sale,_id, images as string[])
+
+  res.status(200).json({
+    itemId: _id,
+    itemName: name,
+    itemDescription: description,
+    itemPrice: price,
+    saleStatus: status,
+    itemImages: downloadUrls,
+    isFree: price === '0' ? true : false,
+    userId,
+    userName,
+    userLink
+  }).end()
 }
 
-export { getPurchase, getPurchaseDetail }
+export { verifyPurchase, getPurchase, getDetailPurchase }

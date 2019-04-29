@@ -1,0 +1,12 @@
+[Mon Apr 29 2019 13:23:46 GMT+0900 (GMT+09:00)] error: Error: Not found - /purchase/abcdefghijkl
+    at app.use.use.use.use.use (D:\works\daemabnb\develop\Daema-BnB-back\src\app.ts:31:10)
+    at Layer.handle [as handle_request] (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\express\lib\router\index.js:317:13)
+    at D:\works\daemabnb\develop\Daema-BnB-back\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\express\lib\router\index.js:335:12)
+    at Immediate.next (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\express\lib\router\index.js:275:10)
+    at Immediate._onImmediate (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\express\lib\router\index.js:635:15)
+    at runCallback (timers.js:706:11)
+    at tryOnImmediate (timers.js:676:5)
+    at processImmediate (timers.js:658:5)
+    at process.topLevelDomainCallback (domain.js:120:23)
