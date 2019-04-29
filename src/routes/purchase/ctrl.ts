@@ -68,4 +68,8 @@ const getDetailPurchase: RequestHandler = async (req: Request, res: Response, ne
   }).end()
 }
 
-export { verifyPurchase, getPurchase, getDetailPurchase }
+const postPurchase: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
+
+}
+
+export { verifyPurchase, getPurchase, getDetailPurchase, postPurchase }
