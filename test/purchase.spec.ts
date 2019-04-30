@@ -110,4 +110,10 @@ describe('purchase test', () => {
       .get('/purchase/exchage/abcdefghijkl').expect(200)
       .set('token', token)
   })
+
+  it('POST /purchase/exchage/{id}', async () => {
+    await req
+      .post('/purchase/exchage/abcdefghijkl').expect(201)
+      .set('token', token)
+  })
 })

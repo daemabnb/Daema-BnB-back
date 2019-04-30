@@ -129,4 +129,9 @@ const getExchageAuthNum: RequestHandler = async (req: Request, res: Response, ne
   }
 }
 
-export { verifyPurchase, getPurchase, getDetailPurchase, postPurchase, getPurchaseHistory, getExchageAuthNum }
+const postExchageAuthNum: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
+
+}
+
+export { verifyPurchase, getPurchase, getDetailPurchase, postPurchase, getPurchaseHistory,
+  getExchageAuthNum, postExchageAuthNum }
