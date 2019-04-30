@@ -8,6 +8,12 @@ enum SaleStatus {
   selled = 'selled'
 }
 
+interface SaleClient {
+  id: string
+  name: string
+  link: string
+}
+
 class DB {
   createUser(user: IUser): Promise<UserDocument> {
     return new User(user).save()
@@ -41,9 +47,14 @@ class DB {
     return Sale.deleteOne({ _id: saleId }).exec()
   }
 
-  updateSaleStatus(saleId: string, status: string): Promise<number> {
+  updateSaleClient(saleId: string, status: string, client: SaleClient): Promise<number> {
     return Sale.updateOne({ _id: saleId }, {
-      $set: { status }
+      $set: {
+        clientId: client.id,
+        clientName: client.name,
+        clientLink: client.link,
+        status
+      }
     }).exec()
   }
 

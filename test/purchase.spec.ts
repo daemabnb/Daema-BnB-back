@@ -44,7 +44,7 @@ describe('purchase test', () => {
       })
     })
 
-    sandbox.stub(DB.prototype, 'updateSaleStatus').value(() => {
+    sandbox.stub(DB.prototype, 'updateSaleClient').value(() => {
       return new Promise(resolve => {
         resolve()
       })

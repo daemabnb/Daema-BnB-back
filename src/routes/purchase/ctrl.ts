@@ -70,13 +70,18 @@ const getDetailPurchase: RequestHandler = async (req: Request, res: Response, ne
 
 const postPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { _id, status } = req.sale
+  const { id, displayName, profileUrl } = req.user
 
   try {
     if (status !== SaleStatus.onSale) {
       throw new Err('안 팔아. 저리 가!', 405)
     }
 
-    await db.updateSaleStatus(_id, SaleStatus.beforeExchage)
+    await db.updateSaleClient(_id, SaleStatus.beforeExchage, {
+      id,
+      name: displayName,
+      link: profileUrl
+    })
 
     res.status(201).end()
   } catch (e) {
