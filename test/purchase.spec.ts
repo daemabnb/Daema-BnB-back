@@ -115,5 +115,6 @@ describe('purchase test', () => {
     await req
       .post('/purchase/exchage/abcdefghijkl').expect(201)
       .set('token', token)
+      .send({ authPassword: '1234' })
   })
 })

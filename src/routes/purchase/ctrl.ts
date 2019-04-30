@@ -129,8 +129,22 @@ const getExchageAuthNum: RequestHandler = async (req: Request, res: Response, ne
   }
 }
 
-const postExchageAuthNum: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
+const postExchageAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const saleId = req.sale.id
 
+  try {
+    const authNum = await getSaleAuthNumber(saleId)
+
+    if (authNum === null) {
+      throw new Err('그런 번호 없어. 저리 가!', 405)
+    }
+
+    res.status(201).json({
+      authPassword: authNum
+    }).end()
+  } catch (e) {
+    next(e)
+  }
 }
 
 export { verifyPurchase, getPurchase, getDetailPurchase, postPurchase, getPurchaseHistory,
