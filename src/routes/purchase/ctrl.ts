@@ -12,7 +12,7 @@ const verifyPurchase: RequestHandler = async (req: Request, res: Response, next:
     const sale = await db.findSaleById(itemId)
 
     if (sale === null) {
-      throw new Err('존재하지 않는 sale id', 405)
+      throw new Err('존재하지 않는 sale id. 저리 가!', 405)
     }
 
     req.sale = sale
@@ -90,7 +90,27 @@ const postPurchase: RequestHandler = async (req: Request, res: Response, next: N
 }
 
 const getPurchaseHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const { offset, limit } = req.query
+  const userId = req.user.id
 
+  try {
+    const purchases = await db.findOwnPurchase(userId, offset, limit)
+
+    const responsePurchases = purchases.map(purchase => {
+      return {
+        itemId: purchase._id,
+        itemName: purchase.name,
+        itemDescription: purchase.description,
+        saleStatus: purchase.status,
+        registerDate: purchase.createdAt,
+        purchaseDate: purchase.selledDate
+      }
+    })
+
+    res.status(200).json(responsePurchases).end()
+  } catch (e) {
+    next(e)
+  }
 }
 
 export { verifyPurchase, getPurchase, getDetailPurchase, postPurchase, getPurchaseHistory }

@@ -49,6 +49,19 @@ describe('purchase test', () => {
         resolve()
       })
     })
+
+    sandbox.stub(DB.prototype, 'findOwnPurchase').value(() => {
+      return new Promise(resolve => {
+        resolve([{
+          _id: 'abcdefghijkl',
+          name: 'item',
+          description: 'itemssss',
+          status: 'beforeExchage',
+          createdAt: Date.now(),
+          selledDate: Date.now()
+        }])
+      })
+    })
   })
 
   after(() => {
