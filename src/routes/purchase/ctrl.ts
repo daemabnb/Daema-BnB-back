@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { getDownloadUrl, ImageType } from '../../util/aws'
+import { setSaleAuthNumber } from '../../util/redis'
 import Err from '../../util/error'
 import DB, { SaleStatus } from '../../model/index'
 
@@ -82,6 +83,8 @@ const postPurchase: RequestHandler = async (req: Request, res: Response, next: N
       name: displayName,
       link: profileUrl
     })
+
+    await setSaleAuthNumber(_id)
 
     res.status(201).end()
   } catch (e) {
