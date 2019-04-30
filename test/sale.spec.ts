@@ -4,6 +4,7 @@ import { Types } from 'mongoose'
 import app from '../src/app'
 import { createToken } from '../src/util/jwt'
 import * as aws from '../src/util/aws'
+import * as image from '../src/util/image'
 import DB from '../src/model/index'
 
 describe('user test', () => {
@@ -52,6 +53,12 @@ describe('user test', () => {
       })
     })
 
+    sandbox.stub(image, 'getImageNames').value(() => {
+      return new Promise(resolve => {
+        resolve(['abcdefgjijkl.jpg'])
+      })
+    })
+
     sandbox.stub(aws, 'getUploadUrl').value(() => {
       return ['sale/abcdefghijkl/a.jpg']
     })
@@ -82,14 +89,13 @@ describe('user test', () => {
 
   it('PUT /sale/{id}', async () => {
     await req
-      .put('/sale/abcdefghijkl').expect(204)
+      .put('/sale/abcdefghijkl').expect(201)
       .set('token', token)
       .send({
         itemName: '물건',
         itemDescription: '물건의 설명',
         itemPrice: '3000',
-        addImages: ['b.jpg'],
-        deleteImages: ['a.jpg']
+        images: ['abcdefghijkl', 'b.jpg']
       })
   })
 

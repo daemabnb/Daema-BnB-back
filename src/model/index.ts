@@ -1,5 +1,6 @@
 import { User, IUser, UserDocument } from './user'
 import { Sale, ISale, SaleDocument } from './sale'
+import { Image, IImage, ImageDocument } from './image'
 
 enum SaleStatus {
   onSale = 'onSale',
@@ -45,7 +46,15 @@ class DB {
       $set: { status }
     }).exec()
   }
+
+  createImage(image: IImage): Promise<ImageDocument> {
+    return new Image(image).save()
+  }
+
+  findImageById(imageId: string): Promise<ImageDocument | null> {
+    return Image.findById(imageId).exec()
+  }
 }
 
 export default DB
-export { UserDocument, SaleDocument, SaleStatus }
+export { UserDocument, SaleDocument, ImageDocument, SaleStatus }

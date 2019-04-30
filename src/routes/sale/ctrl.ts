@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { getUploadUrl, getDownloadUrl, ImageType } from '../../util/aws'
 import Err from '../../util/error'
+import { getImageNames, getImageLinks } from '../../util/image'
 import DB from '../../model/index'
 
 const db: DB = new DB()
@@ -13,7 +14,7 @@ const verifySale: RequestHandler = async (req: Request, res: Response, next: Nex
     const sale = await db.findSaleById(itemId)
 
     if (sale === null) {
-      throw new Err('존재하지 않는 sale id', 405)
+      throw new Err('존재하지 않는 sale id. 저리 가!', 405)
     }
 
     if (sale.userId !== userId) {
@@ -34,17 +35,19 @@ const postSale: RequestHandler = async (req: Request, res: Response, next: NextF
   const { id, displayName, profileUrl } = req.user
 
   try {
+    const imageNames = await getImageNames(images)
+
     const sale = await db.createSale({
       name: itemName,
       description: itemDescription,
       price: itemPrice,
-      images,
+      images: imageNames,
       userId: id,
       userName: displayName,
       userLink: profileUrl
     })
 
-    const urls = getUploadUrl(ImageType.Sale, sale._id, images)
+    const urls = getUploadUrl(ImageType.Sale, sale._id, imageNames)
 
     res.status(201).json(urls).end()
   } catch (e) {
@@ -77,16 +80,13 @@ const getDetailSale: RequestHandler = async (req: Request, res: Response, next: 
 
 const putSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const itemId = req.params.id
-  const { itemName, itemDescription, itemPrice, addImages, deleteImages }:
-    { itemName: string, itemDescription: string, itemPrice: string, addImages: string[], deleteImages: string[] }
+  const { itemName, itemDescription, itemPrice, images }:
+    { itemName: string, itemDescription: string, itemPrice: string, images: string[] }
     = req.body
   const { id, displayName, profileUrl } = req.user
 
   try {
-    const sale = req.sale
-
-    const images: string[] = sale.images as string[]
-    const newImages = getNewImages(images, addImages, deleteImages)
+    const changedImages = await getImageNames(images)
 
     await db.updateSale(itemId, {
       name: itemName,
@@ -95,10 +95,13 @@ const putSale: RequestHandler = async (req: Request, res: Response, next: NextFu
       userId: id,
       userName: displayName,
       userLink: profileUrl,
-      images: newImages
+      images: changedImages
     })
 
-    res.status(204).end()
+    const newImageLinks = getImageLinks(images, changedImages)
+    const newImageUrls = getUploadUrl(ImageType.Sale, itemId, newImageLinks)
+
+    res.status(201).json(newImageUrls).end()
   } catch (e) {
     next(e)
   }
@@ -137,22 +140,6 @@ const getSaleHistory: RequestHandler = async (req: Request, res: Response, next:
   } catch (e) {
     next(e)
   }
-}
-
-const getNewImages = (images: string[], addImages: string[], deleteImages: string[]): string[] => {
-  deleteImages.forEach(deleteImg => {
-    const index = images.indexOf(deleteImg)
-
-    if (index === -1) {
-      throw new Err('잘못된 이미지 삭제', 405)
-    }
-
-    images.splice(index, 1)
-  })
-
-  images.push(...addImages)
-
-  return images
 }
 
 export { verifySale, postSale, getDetailSale, putSale, deleteSale, getSaleHistory }

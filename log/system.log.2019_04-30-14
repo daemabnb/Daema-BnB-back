@@ -1,0 +1,34 @@
+[Tue Apr 30 2019 14:43:43 GMT+0900 (GMT+09:00)] info: connected mongoose
+[Tue Apr 30 2019 14:43:44 GMT+0900 (GMT+09:00)] error: TypeError: Cannot read property 'map' of undefined
+    at Object.getImageNames (D:\works\daemabnb\develop\Daema-BnB-back\src\util\image.ts:7:29)
+    at putSale (D:\works\daemabnb\develop\Daema-BnB-back\src\routes\sale\ctrl.ts:89:33)
+    at Layer.handle [as handle_request] (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\express\lib\router\route.js:137:13)
+    at verifySale (D:\works\daemabnb\develop\Daema-BnB-back\src\routes\sale\ctrl.ts:26:5)
+    at process._tickCallback (internal/process/next_tick.js:68:7)
+[Tue Apr 30 2019 14:45:14 GMT+0900 (GMT+09:00)] info: connected mongoose
+[Tue Apr 30 2019 14:45:15 GMT+0900 (GMT+09:00)] error: CastError: Cast to ObjectId failed for value "abcdefghijklmn" at path "_id" for model "Image"
+    at new CastError (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\mongoose\lib\error\cast.js:29:11)
+    at ObjectId.cast (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\mongoose\lib\schema\objectid.js:242:11)
+    at ObjectId.SchemaType.applySetters (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\mongoose\lib\schematype.js:894:12)
+    at ObjectId.SchemaType._castForQuery (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\mongoose\lib\schematype.js:1297:15)
+    at ObjectId.SchemaType.castForQuery (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\mongoose\lib\schematype.js:1287:15)
+    at ObjectId.SchemaType.castForQueryWrapper (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\mongoose\lib\schematype.js:1266:15)
+    at cast (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\mongoose\lib\cast.js:307:32)
+    at model.Query.Query.cast (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\mongoose\lib\query.js:4466:12)
+    at model.Query.Query._castConditions (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\mongoose\lib\query.js:1762:10)
+    at model.Query.<anonymous> (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\mongoose\lib\query.js:2015:8)
+    at model.Query._wrappedThunk [as _findOne] (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\mongoose\lib\helpers\query\wrapThunk.js:16:8)
+    at process.nextTick (D:\works\daemabnb\develop\Daema-BnB-back\node_modules\kareem\index.js:369:33)
+    at process._tickCallback (internal/process/next_tick.js:61:11)
+[Tue Apr 30 2019 14:48:38 GMT+0900 (GMT+09:00)] info: connected mongoose
+[Tue Apr 30 2019 14:48:39 GMT+0900 (GMT+09:00)] error: Error: 없는 이미지. 저리 가!
+    at Promise.all.images.map (D:\works\daemabnb\develop\Daema-BnB-back\src\util\image.ts:16:13)
+    at process._tickCallback (internal/process/next_tick.js:68:7)
+[Tue Apr 30 2019 14:53:06 GMT+0900 (GMT+09:00)] info: connected mongoose
+[Tue Apr 30 2019 14:53:08 GMT+0900 (GMT+09:00)] error: Error: 없는 이미지. 저리 가!
+    at Promise.all.images.map (D:\works\daemabnb\develop\Daema-BnB-back\src\util\image.ts:16:13)
+    at process._tickCallback (internal/process/next_tick.js:68:7)
+[Tue Apr 30 2019 14:53:08 GMT+0900 (GMT+09:00)] error: TypeError: image._id.concat is not a function
+    at Promise.all.images.map.map (D:\works\daemabnb\develop\Daema-BnB-back\src\util\image.ts:43:24)
+    at process._tickCallback (internal/process/next_tick.js:68:7)
