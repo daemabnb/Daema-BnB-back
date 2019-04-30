@@ -2,6 +2,7 @@ import * as request from 'supertest'
 import * as sinon from 'sinon'
 import app from '../src/app'
 import { createToken } from '../src/util/jwt'
+import * as redis from '../src/util/redis'
 import DB from '../src/model/index'
 
 describe('purchase test', () => {
@@ -62,6 +63,18 @@ describe('purchase test', () => {
         }])
       })
     })
+
+    sandbox.stub(redis, 'setSaleAuthNumber').value(() => {
+      return new Promise(resolve => {
+        resolve()
+      })
+    })
+
+    sandbox.stub(redis, 'getSaleAuthNumber').value(() => {
+      return new Promise(resolve => {
+        resolve('1234')
+      })
+    })
   })
 
   after(() => {
@@ -89,6 +102,12 @@ describe('purchase test', () => {
   it('GET /purchase/history?offset=0&limit=5', async () => {
     await req
       .get('/purchase/history').expect(200)
+      .set('token', token)
+  })
+
+  it('GET /purchase/exchage/{id}', async () => {
+    await req
+      .get('/purchase/exchage/abcdefghijkl').expect(200)
       .set('token', token)
   })
 })
