@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { getDownloadUrl, ImageType } from '../../util/aws'
-import { setSaleAuthNumber } from '../../util/redis'
+import { setSaleAuthNumber, getSaleAuthNumber } from '../../util/redis'
 import Err from '../../util/error'
 import DB, { SaleStatus } from '../../model/index'
 
@@ -116,4 +116,17 @@ const getPurchaseHistory: RequestHandler = async (req: Request, res: Response, n
   }
 }
 
-export { verifyPurchase, getPurchase, getDetailPurchase, postPurchase, getPurchaseHistory }
+const getExchageAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const saleId = req.sale.id
+  try {
+    const authNum = await getSaleAuthNumber(saleId)
+
+    res.status(200).json({
+      authPassword: authNum
+    }).end()
+  } catch (e) {
+    next(e)
+  }
+}
+
+export { verifyPurchase, getPurchase, getDetailPurchase, postPurchase, getPurchaseHistory, getExchageAuthNum }

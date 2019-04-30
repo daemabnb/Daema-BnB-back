@@ -8,5 +8,6 @@ purchaseRouter.get('/', verifyToken, ctrl.getPurchase)
   .get('/:id', verifyToken, ctrl.verifyPurchase, ctrl.getDetailPurchase)
   .post('/:id', verifyToken, ctrl.verifyPurchase, ctrl.postPurchase)
   .get('/history', verifyToken, ctrl.getPurchaseHistory)
+  .get('/exchage/:id', verifyToken, ctrl.verifyPurchase, ctrl.getExchageAuthNum)
 
 export default purchaseRouter

@@ -3,7 +3,7 @@ import * as Redis from 'ioredis'
 const redisClient: Redis.Redis = new Redis()
 
 const addAuthWaitingList =
-async (email: string, authNum: number, expireTime: number = 60 * 60 * 24 * 3): Promise<void> => {
+async (email: string, authNum: string, expireTime: number = 60 * 60 * 24 * 3): Promise<void> => {
   try {
     await redisClient.select(4)
     await redisClient.set(email, authNum, 'EX', expireTime)
