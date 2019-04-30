@@ -1,9 +1,0 @@
-[Sun Apr 28 2019 23:46:23 GMT+0900 (GMT+09:00)] error: TypeError: sales.map is not a function
-    at getPurchase (D:\works\daemabnb\develop\Daema-BnB-back\src\routes\purchase\ctrl.ts:14:33)
-    at process._tickCallback (internal/process/next_tick.js:68:7)
-[Sun Apr 28 2019 23:48:52 GMT+0900 (GMT+09:00)] error: TypeError: sales.map is not a function
-    at getPurchase (D:\works\daemabnb\develop\Daema-BnB-back\src\routes\purchase\ctrl.ts:14:33)
-    at process._tickCallback (internal/process/next_tick.js:68:7)
-[Sun Apr 28 2019 23:50:15 GMT+0900 (GMT+09:00)] error: TypeError: sales.map is not a function
-    at getPurchase (D:\works\daemabnb\develop\Daema-BnB-back\src\routes\purchase\ctrl.ts:15:33)
-    at process._tickCallback (internal/process/next_tick.js:68:7)
