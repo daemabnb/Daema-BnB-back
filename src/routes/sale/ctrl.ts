@@ -2,7 +2,7 @@ import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { getUploadUrl, getDownloadUrl, ImageType } from '../../util/aws'
 import Err from '../../util/error'
 import { getImageNames, getImageLinks } from '../../util/image'
-import DB from '../../model/index'
+import DB, { SaleStatus } from '../../model/index'
 
 const db: DB = new DB()
 
@@ -83,9 +83,14 @@ const putSale: RequestHandler = async (req: Request, res: Response, next: NextFu
   const { itemName, itemDescription, itemPrice, images }:
     { itemName: string, itemDescription: string, itemPrice: string, images: string[] }
     = req.body
+  const saleStatus = req.sale.status as string
   const { id, displayName, profileUrl } = req.user
 
   try {
+    if (saleStatus === SaleStatus.beforeExchage) {
+      throw new Err('동작 그만 밑장 빼기냐. 어디서 수정을 시도해?', 405)
+    }
+
     const changedImages = await getImageNames(images)
 
     await db.updateSale(itemId, {
@@ -109,8 +114,13 @@ const putSale: RequestHandler = async (req: Request, res: Response, next: NextFu
 
 const deleteSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const itemId = req.params.id
+  const saleStatus = req.sale.status as string
 
   try {
+    if (saleStatus === SaleStatus.beforeExchage) {
+      throw new Err('동작 그만 밑장 빼기냐. 어디서 수정을 시도해?', 405)
+    }
+
     await db.deleteSale(itemId)
 
     res.status(204).end()
