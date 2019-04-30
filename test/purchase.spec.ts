@@ -2,6 +2,7 @@ import * as request from 'supertest'
 import * as sinon from 'sinon'
 import app from '../src/app'
 import { createToken } from '../src/util/jwt'
+import * as redis from '../src/util/redis'
 import DB from '../src/model/index'
 
 describe('purchase test', () => {
@@ -44,9 +45,34 @@ describe('purchase test', () => {
       })
     })
 
-    sandbox.stub(DB.prototype, 'updateSaleStatus').value(() => {
+    sandbox.stub(DB.prototype, 'updateSaleClient').value(() => {
       return new Promise(resolve => {
         resolve()
+      })
+    })
+
+    sandbox.stub(DB.prototype, 'findOwnPurchase').value(() => {
+      return new Promise(resolve => {
+        resolve([{
+          _id: 'abcdefghijkl',
+          name: 'item',
+          description: 'itemssss',
+          status: 'beforeExchage',
+          createdAt: Date.now(),
+          selledDate: Date.now()
+        }])
+      })
+    })
+
+    sandbox.stub(redis, 'setSaleAuthNumber').value(() => {
+      return new Promise(resolve => {
+        resolve()
+      })
+    })
+
+    sandbox.stub(redis, 'getSaleAuthNumber').value(() => {
+      return new Promise(resolve => {
+        resolve('1234')
       })
     })
   })
@@ -71,5 +97,24 @@ describe('purchase test', () => {
     await req
       .post('/purchase/abcdefghijkl').expect(201)
       .set('token', token)
+  })
+
+  it('GET /purchase/history?offset=0&limit=5', async () => {
+    await req
+      .get('/purchase/history').expect(200)
+      .set('token', token)
+  })
+
+  it('GET /purchase/exchage/{id}', async () => {
+    await req
+      .get('/purchase/exchage/abcdefghijkl').expect(200)
+      .set('token', token)
+  })
+
+  it('POST /purchase/exchage/{id}', async () => {
+    await req
+      .post('/purchase/exchage/abcdefghijkl').expect(201)
+      .set('token', token)
+      .send({ authPassword: '1234' })
   })
 })
