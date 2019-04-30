@@ -72,4 +72,10 @@ describe('purchase test', () => {
       .post('/purchase/abcdefghijkl').expect(201)
       .set('token', token)
   })
+
+  it('GET /purchase/history?offset=0&limit=5', async () => {
+    await req
+      .get('/purchase/history').expect(200)
+      .set('token', token)
+  })
 })

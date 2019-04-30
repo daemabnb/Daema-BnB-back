@@ -84,4 +84,8 @@ const postPurchase: RequestHandler = async (req: Request, res: Response, next: N
   }
 }
 
-export { verifyPurchase, getPurchase, getDetailPurchase, postPurchase }
+const getPurchaseHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+}
+
+export { verifyPurchase, getPurchase, getDetailPurchase, postPurchase, getPurchaseHistory }
