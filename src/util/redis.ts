@@ -12,7 +12,7 @@ async (email: string, authNum: number, expireTime: number = 60 * 60 * 24 * 3): P
   }
 }
 
-const getAuthNumber = async (email: string): Promise<string> => {
+const getEmailAuthNumber = async (email: string): Promise<string> => {
   try {
     await redisClient.select(4)
     const authNum = await redisClient.get(email) as string
@@ -34,6 +34,17 @@ const setSaleAuthNumber = async (saleId: string, expireTime: number = 60 * 60 * 
   }
 }
 
+const getSaleAuthNumber = async (saleId: string): Promise<string> => {
+  try {
+    await redisClient.select(5)
+    const authNum = await redisClient.get(saleId) as string
+
+    return authNum
+  } catch (e) {
+    throw new Error(e)
+  }
+}
+
 const createAuthNum = (): string => {
   let authNum: string = ''
 
@@ -45,4 +56,4 @@ const createAuthNum = (): string => {
   return authNum
 }
 
-export { addAuthWaitingList, getAuthNumber, setSaleAuthNumber }
+export { addAuthWaitingList, getEmailAuthNumber, setSaleAuthNumber, getSaleAuthNumber }
