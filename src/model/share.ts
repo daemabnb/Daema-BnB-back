@@ -8,6 +8,7 @@ interface IShare {
   period: number
   sharedDate?: Date
   isPublic: boolean
+  status?: string
   images?: string[]
   userId: string
   userName: string
@@ -49,6 +50,10 @@ const ShareSchema: Schema = new Schema({
   isPublic: {
     type: Boolean,
     required: true
+  },
+  status: {
+    type: String,
+    default: '공유 중'
   },
   images: {
     type: [

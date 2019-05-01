@@ -5,7 +5,7 @@ import logger from './util/logger'
 import router from './routes/index'
 import passport from './util/passport'
 import Err from './util/error'
-import { SaleDocument } from './model/index'
+import { SaleDocument, ShareDocument } from './model/index'
 
 const mongooseOptions: mongoose.ConnectionOptions = {
   useNewUrlParser: true
@@ -18,6 +18,7 @@ mongoose.connect(mongoUri, mongooseOptions)
 declare module 'express' {
   interface Request {
     sale: SaleDocument
+    share: ShareDocument
   }
 }
 

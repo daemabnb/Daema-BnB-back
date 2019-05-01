@@ -67,6 +67,10 @@ class DB {
     return new Share(share).save()
   }
 
+  findShareById(shareId: string): Promise<ShareDocument | null> {
+    return Share.findById(shareId).exec()
+  }
+
   createImage(image: IImage): Promise<ImageDocument> {
     return new Image(image).save()
   }
