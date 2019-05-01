@@ -6,8 +6,9 @@ interface IShare {
   price: string
   returnDate: Date
   period: number
-  sharedDate: Date
+  sharedDate?: Date
   isPublic: boolean
+  images?: string[]
   userId: string
   userName: string
   userLink: string
@@ -48,6 +49,12 @@ const ShareSchema: Schema = new Schema({
   isPublic: {
     type: Boolean,
     required: true
+  },
+  images: {
+    type: [
+      String
+    ],
+    default: []
   },
   userId: {
     type: String,

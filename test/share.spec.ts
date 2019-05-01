@@ -1,7 +1,10 @@
 import * as request from 'supertest'
 import * as sinon from 'sinon'
 import { Types } from 'mongoose'
+import DB from '../src/model/index'
 import app from '../src/app'
+import * as aws from '../src/util/aws'
+import * as image from '../src/util/image'
 import { createToken } from '../src/util/jwt'
 
 describe('share test', () => {
@@ -14,6 +17,24 @@ describe('share test', () => {
     token = createToken('abcd1234', 'nye', 'http://localhost:3000', 'nye@gmail.com')
 
     sandbox = sinon.createSandbox()
+
+    sandbox.stub(DB.prototype, 'createShare').value(() => {
+      return new Promise(resolve => {
+        resolve({
+          _id: Types.ObjectId('abcdefghijkl')
+        })
+      })
+    })
+
+    sandbox.stub(image, 'getImageNames').value(() => {
+      return new Promise(resolve => {
+        resolve(['abcdefgjijkl.jpg'])
+      })
+    })
+
+    sandbox.stub(aws, 'getUploadUrl').value(() => {
+      return ['sale/abcdefghijkl/a.jpg']
+    })
   })
 
   after(() => {

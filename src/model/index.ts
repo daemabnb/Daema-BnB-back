@@ -1,5 +1,6 @@
 import { User, IUser, UserDocument } from './user'
 import { Sale, ISale, SaleDocument } from './sale'
+import { Share, IShare, ShareDocument } from './share'
 import { Image, IImage, ImageDocument } from './image'
 
 enum SaleStatus {
@@ -62,6 +63,10 @@ class DB {
     }).exec()
   }
 
+  createShare(share: IShare): Promise<ShareDocument> {
+    return new Share(share).save()
+  }
+
   createImage(image: IImage): Promise<ImageDocument> {
     return new Image(image).save()
   }
@@ -72,4 +77,4 @@ class DB {
 }
 
 export default DB
-export { UserDocument, SaleDocument, ImageDocument, SaleStatus }
+export { UserDocument, SaleDocument, ShareDocument, ImageDocument, SaleStatus }
