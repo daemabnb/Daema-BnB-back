@@ -112,7 +112,20 @@ const putShare: RequestHandler = async (req: Request, res: Response, next: NextF
 }
 
 const deleteShare: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const itemId = req.params.id
+  const shareStatus = req.share.status
 
+  try {
+    if (shareStatus !== ShareStatus.onShare) {
+      throw new Err('동작 그만 밑장 빼기냐. 어디서 삭제를 시도해?', 405)
+    }
+
+    await db.deleteShare(itemId)
+
+    res.status(204).end()
+  } catch (e) {
+    next(e)
+  }
 }
 
 export { verifyShare, postShare, getDetailShare, putShare, deleteShare }

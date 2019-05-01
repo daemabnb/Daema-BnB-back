@@ -81,6 +81,10 @@ class DB {
     return Share.updateOne({ _id: shareId }, { share }).exec()
   }
 
+  deleteShare(shareId: string): Promise<{}> {
+    return Share.deleteOne({ _id: shareId }).exec()
+  }
+
   updateShareClient(shareId: string, status: string, client: Client): Promise<number> {
     return Share.updateOne({ _id: shareId }, {
       $set: {

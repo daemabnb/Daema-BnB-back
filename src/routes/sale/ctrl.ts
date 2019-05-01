@@ -114,11 +114,11 @@ const putSale: RequestHandler = async (req: Request, res: Response, next: NextFu
 
 const deleteSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const itemId = req.params.id
-  const saleStatus = req.sale.status as string
+  const saleStatus = req.sale.status
 
   try {
     if (saleStatus === SaleStatus.beforeExchage) {
-      throw new Err('동작 그만 밑장 빼기냐. 어디서 수정을 시도해?', 405)
+      throw new Err('동작 그만 밑장 빼기냐. 어디서 삭제를 시도해?', 405)
     }
 
     await db.deleteSale(itemId)

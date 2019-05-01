@@ -51,6 +51,12 @@ describe('share test', () => {
       })
     })
 
+    sandbox.stub(DB.prototype, 'deleteShare').value(() => {
+      return new Promise(resolve => {
+        resolve()
+      })
+    })
+
     sandbox.stub(image, 'getImageNames').value(() => {
       return new Promise(resolve => {
         resolve(['abcdefgjijkl.jpg'])
