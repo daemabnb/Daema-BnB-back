@@ -77,6 +77,10 @@ class DB {
     return Share.findById(shareId).exec()
   }
 
+  findOwnShares(userId: string, skip: number, limit: number): Promise<ShareDocument[]> {
+    return Share.find({ userId }).skip(skip).limit(limit).exec()
+  }
+
   updateShare(shareId: string, share: IShare): Promise<number> {
     return Share.updateOne({ _id: shareId }, { share }).exec()
   }

@@ -45,6 +45,25 @@ describe('share test', () => {
       })
     })
 
+    sandbox.stub(DB.prototype, 'findOwnShares').value(() => {
+      return new Promise(resolve => {
+        resolve([{
+          _id: 'abcdefghijkl',
+          name: 'item',
+          description: 'itemssss',
+          price: '5000',
+          status: 'onShare',
+          returnDate: Date.now(),
+          period: 7,
+          isPublic: false,
+          userId: 'abcd1234',
+          userName: 'nye',
+          userLink: 'http://localhost:3000',
+          images: ['a.jpg']
+        }])
+      })
+    })
+
     sandbox.stub(DB.prototype, 'updateShare').value(() => {
       return new Promise(resolve => {
         resolve()
@@ -116,7 +135,7 @@ describe('share test', () => {
 
   it('GET /share/history', async () => {
     await req
-      .get('/share/history?offset=0&limit=5').expect(204)
+      .get('/share/history?offset=0&limit=5').expect(200)
       .set('token', token)
   })
 })

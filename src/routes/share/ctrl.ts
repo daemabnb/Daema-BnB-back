@@ -129,7 +129,30 @@ const deleteShare: RequestHandler = async (req: Request, res: Response, next: Ne
 }
 
 const getShareHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const { offset, limit } = req.query
+  const userId = req.user.id
 
+  try {
+    const shares = await db.findOwnShares(userId, parseInt(offset, 10), parseInt(limit, 10))
+
+    const responseShares = shares.map(share => {
+      return {
+        itemId: share._id,
+        itemName: share.name,
+        itemDescription: share.description,
+        shareStatus: share.status,
+        registerDate: share.createdAt,
+        returnDate: share.returnDate,
+        sharedDate: share.sharedDate,
+        period: share.period,
+        isPublic: share.isPublic
+      }
+    })
+
+    res.status(200).json(responseShares).end()
+  } catch (e) {
+    next(e)
+  }
 }
 
 export { verifyShare, postShare, getDetailShare, putShare, deleteShare, getShareHistory }

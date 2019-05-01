@@ -138,6 +138,7 @@ const getSaleHistory: RequestHandler = async (req: Request, res: Response, next:
 
     const responseSales = sales.map(sale => {
       return {
+        itemId: sale._id,
         itemName: sale.name,
         itemDescription: sale.description,
         saleStatus: sale.status,
