@@ -55,4 +55,10 @@ describe('share test', () => {
         images: ['a.jpg']
       })
   })
+
+  it('GET /share/{id}', async () => {
+    await req
+      .get('/share/abcdefghijkl').expect(200)
+      .set('token', token)
+  })
 })

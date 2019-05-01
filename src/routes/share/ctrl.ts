@@ -5,6 +5,10 @@ import DB from '../../model/index'
 
 const db: DB = new DB()
 
+const verifyShare: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+}
+
 const postShare: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { itemName, itemDescription, itemPrice, returnDate, period, isPublic, images } = req.body
   const { id, displayName, profileUrl } = req.user
@@ -33,4 +37,8 @@ const postShare: RequestHandler = async (req: Request, res: Response, next: Next
   }
 }
 
-export { postShare }
+const getDetailShare: RequestHandler = (req: Request, res: Response, next: NextFunction): void => {
+
+}
+
+export { verifyShare, postShare, getDetailShare }
