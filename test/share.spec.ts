@@ -33,7 +33,7 @@ describe('share test', () => {
           name: 'item',
           description: 'itemssss',
           price: '5000',
-          status: '공유 중',
+          status: 'onShare',
           returnDate: Date.now(),
           period: 7,
           isPublic: false,
@@ -42,6 +42,12 @@ describe('share test', () => {
           userLink: 'http://localhost:3000',
           images: ['a.jpg']
         })
+      })
+    })
+
+    sandbox.stub(DB.prototype, 'updateShare').value(() => {
+      return new Promise(resolve => {
+        resolve()
       })
     })
 
@@ -79,5 +85,20 @@ describe('share test', () => {
     await req
       .get('/share/abcdefghijkl').expect(200)
       .set('token', token)
+  })
+
+  it('PUT /share/{id}', async () => {
+    await req
+      .put('/share/abcdefghijkl').expect(201)
+      .set('token', token)
+      .send({
+        itemName: '물건',
+        itemDescription: '물건의 설명',
+        itemPrice: '2000',
+        returnDate: Date.now(),
+        period: 7,
+        isPublic: false,
+        images: ['abcdefghijkl', 'b.jpg']
+      })
   })
 })

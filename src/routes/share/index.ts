@@ -6,5 +6,6 @@ const shareRouter: Router = Router()
 
 shareRouter.post('/', verifyToken, ctrl.postShare)
   .get('/:id', verifyToken, ctrl.verifyShare, ctrl.getDetailShare)
+  .put('/:id', verifyToken, ctrl.verifyShare, ctrl.putShare)
 
 export default shareRouter

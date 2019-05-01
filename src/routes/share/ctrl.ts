@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { getUploadUrl, getDownloadUrl, ImageType } from '../../util/aws'
-import { getImageNames } from '../../util/image'
+import { getImageNames, getImageLinks } from '../../util/image'
+import {} from '../../util/redis'
 import Err from '../../util/error'
-import DB from '../../model/index'
+import DB, { ShareStatus } from '../../model/index'
 
 const db: DB = new DB()
 
@@ -75,4 +76,39 @@ const getDetailShare: RequestHandler = (req: Request, res: Response, next: NextF
   }).end()
 }
 
-export { verifyShare, postShare, getDetailShare }
+const putShare: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const itemId = req.params.id
+  const { itemName, itemDescription, itemPrice, returnDate, period, isPublic, images } = req.body
+  const shareStatus = req.share.status as string
+  const { id, displayName, profileUrl } = req.user
+
+  try {
+    if (shareStatus !== ShareStatus.onShare) {
+      throw new Err('동작 그만, 밑장 빼기냐. 어디서 수정을 시도해?', 405)
+    }
+
+    const changedImages = await getImageNames(images)
+
+    await db.updateShare(itemId, {
+      name: itemName,
+      description: itemDescription,
+      price: itemPrice,
+      returnDate,
+      period,
+      isPublic,
+      userId: id,
+      userName: displayName,
+      userLink: profileUrl,
+      images: changedImages
+    })
+
+    const newImageLinks = getImageLinks(images, changedImages)
+    const newImageUrls = getUploadUrl(ImageType.Share, itemId, newImageLinks)
+
+    res.status(201).json(newImageUrls).end()
+  } catch (e) {
+    next(e)
+  }
+}
+
+export { verifyShare, postShare, getDetailShare, putShare }

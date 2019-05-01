@@ -53,7 +53,7 @@ const ShareSchema: Schema = new Schema({
   },
   status: {
     type: String,
-    default: '공유 중'
+    default: 'onShare'
   },
   images: {
     type: [

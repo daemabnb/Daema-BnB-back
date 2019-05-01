@@ -9,7 +9,13 @@ enum SaleStatus {
   selled = 'selled'
 }
 
-interface SaleClient {
+enum ShareStatus {
+  onShare = 'onShare',
+  onRental = 'onRental',
+  beforeExchage = 'beforeExchage'
+}
+
+interface Client {
   id: string
   name: string
   link: string
@@ -52,7 +58,7 @@ class DB {
     return Sale.deleteOne({ _id: saleId }).exec()
   }
 
-  updateSaleClient(saleId: string, status: string, client: SaleClient): Promise<number> {
+  updateSaleClient(saleId: string, status: string, client: Client): Promise<number> {
     return Sale.updateOne({ _id: saleId }, {
       $set: {
         clientId: client.id,
@@ -71,6 +77,21 @@ class DB {
     return Share.findById(shareId).exec()
   }
 
+  updateShare(shareId: string, share: IShare): Promise<number> {
+    return Share.updateOne({ _id: shareId }, { share }).exec()
+  }
+
+  updateShareClient(shareId: string, status: string, client: Client): Promise<number> {
+    return Share.updateOne({ _id: shareId }, {
+      $set: {
+        clientId: client.id,
+        clientName: client.name,
+        clientLink: client.link,
+        status
+      }
+    }).exec()
+  }
+
   createImage(image: IImage): Promise<ImageDocument> {
     return new Image(image).save()
   }
@@ -81,4 +102,4 @@ class DB {
 }
 
 export default DB
-export { UserDocument, SaleDocument, ShareDocument, ImageDocument, SaleStatus }
+export { UserDocument, SaleDocument, ShareDocument, ImageDocument, SaleStatus, ShareStatus }
