@@ -101,4 +101,10 @@ describe('share test', () => {
         images: ['abcdefghijkl', 'b.jpg']
       })
   })
+
+  it('DELETE /share/{id}', async () => {
+    await req
+      .delete('/share/abcdefghijkl').expect(204)
+      .set('token', token)
+  })
 })
