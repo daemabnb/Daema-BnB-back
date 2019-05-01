@@ -128,4 +128,8 @@ const deleteShare: RequestHandler = async (req: Request, res: Response, next: Ne
   }
 }
 
-export { verifyShare, postShare, getDetailShare, putShare, deleteShare }
+const getShareHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+}
+
+export { verifyShare, postShare, getDetailShare, putShare, deleteShare, getShareHistory }

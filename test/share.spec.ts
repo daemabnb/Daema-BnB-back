@@ -113,4 +113,10 @@ describe('share test', () => {
       .delete('/share/abcdefghijkl').expect(204)
       .set('token', token)
   })
+
+  it('GET /share/history', async () => {
+    await req
+      .get('/share/history?offset=0&limit=5').expect(204)
+      .set('token', token)
+  })
 })
