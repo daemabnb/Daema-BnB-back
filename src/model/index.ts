@@ -42,6 +42,10 @@ class DB {
     return Sale.find({ userId }).skip(skip).limit(limit).exec()
   }
 
+  findPurchases(skip: number, limit: number): Promise<SaleDocument[]> {
+    return Share.find({ status: SaleStatus.beforeExchage }).skip(skip).limit(limit).exec()
+  }
+
   findOwnPurchase(clientId: string, skip: number, limit: number): Promise<SaleDocument[]> {
     return Sale.find({ clientId }).skip(skip).limit(limit).exec()
   }

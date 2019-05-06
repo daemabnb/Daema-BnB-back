@@ -16,7 +16,7 @@ describe('purchase test', () => {
 
     sandbox = sinon.createSandbox()
 
-    sandbox.stub(DB.prototype, 'findSales').value(() => {
+    sandbox.stub(DB.prototype, 'findPurchases').value(() => {
       return new Promise(resolve => {
         resolve(
           [{

@@ -28,7 +28,7 @@ const getPurchase: RequestHandler = async (req: Request, res: Response, next: Ne
   const { offset, limit } = req.query
 
   try {
-    const sales = await db.findSales(parseInt(offset, 10), parseInt(limit, 10))
+    const sales = await db.findPurchases(parseInt(offset, 10), parseInt(limit, 10))
 
     const responseSales = sales.map(sale => {
       const { _id, name, price } = sale
