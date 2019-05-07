@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { getDownloadUrl, ImageType } from '../../util/aws'
 import DB, { ShareStatus } from '../../model/index'
-import { setShareAuthNumber } from '../../util/redis'
+import { setShareAuthNumber, getShareAuthNumber } from '../../util/redis'
 import Err from '../../util/error'
 
 const db: DB = new DB()
@@ -125,4 +125,17 @@ const getRentalHistory: RequestHandler = async (req: Request, res: Response, nex
   }
 }
 
-export { verifyRental, getRental, getDetailRental, postRental, getRentalHistory }
+const getExchageAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const saleId = req.sale.id
+  try {
+    const authNum = await getShareAuthNumber(saleId)
+
+    res.status(200).json({
+      authPassword: authNum
+    }).end()
+  } catch (e) {
+    next(e)
+  }
+}
+
+export { verifyRental, getRental, getDetailRental, postRental, getRentalHistory, getExchageAuthNum }

@@ -104,4 +104,10 @@ describe('share test', () => {
       .get('/rental/history?offset=0&limit=5').expect(200)
       .set('token', token)
   })
+
+  it('GET /rental/exchange/{id}', async () => {
+    await req
+      .get('/rental/exchange/abcdefghijkl').expect(200)
+      .set('token', token)
+  })
 })
