@@ -28,6 +28,24 @@ describe('share test', () => {
         }])
       })
     })
+
+    sandbox.stub(DB.prototype, 'findShareById').value(() => {
+      return new Promise(resolve => {
+        resolve({
+          _id: 'abcdefghijkl',
+          name: 'item',
+          description: 'itemssss',
+          price: '5000',
+          status: 'onSale',
+          returnDate: Date.now(),
+          period: 7,
+          userId: 'abcd1234',
+          userName: 'nye',
+          userLink: 'http://localhost:3000',
+          images: ['a.jpg']
+        })
+      })
+    })
   })
 
   after(() => {
