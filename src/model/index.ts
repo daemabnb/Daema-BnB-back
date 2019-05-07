@@ -89,6 +89,10 @@ class DB {
     return Share.find({ status: ShareStatus.beforeExchage }).skip(skip).limit(limit).exec()
   }
 
+  findOwnRental(clientId: string, skip: number, limit: number): Promise<ShareDocument[]> {
+    return Share.find({ clientId }).skip(skip).limit(limit).exec()
+  }
+
   updateShare(shareId: string, share: IShare): Promise<number> {
     return Share.updateOne({ _id: shareId }, { share }).exec()
   }

@@ -54,6 +54,22 @@ describe('share test', () => {
       })
     })
 
+    sandbox.stub(DB.prototype, 'findOwnRental').value(() => {
+      return new Promise(resolve => {
+        resolve([{
+          _id: 'abcdefghijkl',
+          name: 'item',
+          description: 'itemssss',
+          status: 'beforeExchage',
+          createdAt: Date.now(),
+          sharedDate: Date.now(),
+          returnDate: Date.now(),
+          period: 7,
+          isPublic: false
+        }])
+      })
+    })
+
     sandbox.stub(redis, 'setShareAuthNumber').value(() => {
       return new Promise(resolve => {
         resolve()
@@ -85,7 +101,7 @@ describe('share test', () => {
 
   it('GET /rental/history', async () => {
     await req
-      .get('/rental/history').expect(200)
+      .get('/rental/history?offset=0&limit=5').expect(200)
       .set('token', token)
   })
 })

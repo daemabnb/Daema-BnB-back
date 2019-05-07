@@ -99,7 +99,30 @@ const postRental: RequestHandler = async (req: Request, res: Response, next: Nex
 }
 
 const getRentalHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const { offset, limit } = req.query
+  const userId = req.user.id
 
+  try {
+    const rentals = await db.findOwnRental(userId, offset, limit)
+
+    const responseRentals = rentals.map(rental => {
+      return {
+        itemId: rental._id,
+        itemName: rental.name,
+        itemDescription: rental.description,
+        shareStatus: rental.status,
+        registerDate: rental.createdAt,
+        sharedDate: rental.sharedDate,
+        returnDate: rental.returnDate,
+        period: rental.period,
+        isPublic: rental.isPublic
+      }
+    })
+
+    res.status(200).json(responseRentals).end()
+  } catch (e) {
+    next(e)
+  }
 }
 
 export { verifyRental, getRental, getDetailRental, postRental, getRentalHistory }
