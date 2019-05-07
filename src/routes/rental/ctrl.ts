@@ -98,4 +98,8 @@ const postRental: RequestHandler = async (req: Request, res: Response, next: Nex
   }
 }
 
-export { verifyRental, getRental, getDetailRental, postRental }
+const getRentalHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+}
+
+export { verifyRental, getRental, getDetailRental, postRental, getRentalHistory }
