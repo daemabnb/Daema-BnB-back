@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { getDownloadUrl, ImageType } from '../../util/aws'
-import DB from '../../model/index'
+import DB, { ShareStatus } from '../../model/index'
+import { setShareAuthNumber } from '../../util/redis'
 import Err from '../../util/error'
 
 const db: DB = new DB()
@@ -75,7 +76,26 @@ const getDetailRental: RequestHandler = async (req: Request, res: Response, next
 }
 
 const postRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const { _id, status } = req.share
+  const { id, displayName, profileUrl } = req.user
 
+  try {
+    if (status !== ShareStatus.onShare) {
+      throw new Err('안 팔아. 저리 가!', 405)
+    }
+
+    await db.updateShareClient(_id, ShareStatus.beforeExchage, {
+      id,
+      name: displayName,
+      link: profileUrl
+    })
+
+    await setShareAuthNumber(_id)
+
+    res.status(201).end()
+  } catch (e) {
+    next(e)
+  }
 }
 
 export { verifyRental, getRental, getDetailRental, postRental }

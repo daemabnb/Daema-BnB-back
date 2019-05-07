@@ -2,6 +2,7 @@ import * as request from 'supertest'
 import * as sinon from 'sinon'
 import app from '../src/app'
 import DB from '../src/model/index'
+import * as redis from '../src/util/redis'
 import { createToken } from '../src/util/jwt'
 
 describe('share test', () => {
@@ -36,7 +37,7 @@ describe('share test', () => {
           name: 'item',
           description: 'itemssss',
           price: '5000',
-          status: 'onSale',
+          status: 'onShare',
           returnDate: Date.now(),
           period: 7,
           userId: 'abcd1234',
@@ -44,6 +45,18 @@ describe('share test', () => {
           userLink: 'http://localhost:3000',
           images: ['a.jpg']
         })
+      })
+    })
+
+    sandbox.stub(DB.prototype, 'updateShareClient').value(() => {
+      return new Promise(resolve => {
+        resolve()
+      })
+    })
+
+    sandbox.stub(redis, 'setShareAuthNumber').value(() => {
+      return new Promise(resolve => {
+        resolve()
       })
     })
   })

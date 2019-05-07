@@ -45,6 +45,28 @@ const getSaleAuthNumber = async (saleId: string): Promise<string | null> => {
   }
 }
 
+const setShareAuthNumber = async (saleId: string, expireTime: number = 60 * 60 * 24 * 3): Promise<void> => {
+  try {
+    await redisClient.select(6)
+    const authNum = createAuthNum()
+
+    await redisClient.set(saleId, authNum, 'EX', expireTime)
+  } catch (e) {
+    throw new Error(e)
+  }
+}
+
+const getShareAuthNumber = async (shareId: string): Promise<string | null> => {
+  try {
+    await redisClient.select(6)
+    const authNum = await redisClient.get(shareId)
+
+    return authNum
+  } catch (e) {
+    throw new Error(e)
+  }
+}
+
 const createAuthNum = (): string => {
   let authNum: string = ''
 
@@ -56,4 +78,5 @@ const createAuthNum = (): string => {
   return authNum
 }
 
-export { addAuthWaitingList, getEmailAuthNumber, setSaleAuthNumber, getSaleAuthNumber }
+export { addAuthWaitingList, getEmailAuthNumber, setSaleAuthNumber,
+  getSaleAuthNumber, setShareAuthNumber, getShareAuthNumber }
