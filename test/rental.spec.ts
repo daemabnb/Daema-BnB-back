@@ -110,4 +110,13 @@ describe('share test', () => {
       .get('/rental/exchange/abcdefghijkl').expect(200)
       .set('token', token)
   })
+
+  it('POST /rental/exchange/{id}', async () => {
+    await req
+      .post('/rental/exchange/abcdefghijkl').expect(201)
+      .set('token', token)
+      .send({
+        authPassword: '1234'
+      })
+  })
 })
