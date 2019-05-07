@@ -126,9 +126,10 @@ const getRentalHistory: RequestHandler = async (req: Request, res: Response, nex
 }
 
 const getExchageAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const saleId = req.sale.id
+  const shareId = req.share.id
+
   try {
-    const authNum = await getShareAuthNumber(saleId)
+    const authNum = await getShareAuthNumber(shareId)
 
     res.status(200).json({
       authPassword: authNum

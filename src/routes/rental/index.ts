@@ -8,6 +8,6 @@ rentalRouter.get('/', verifyToken, ctrl.getRental)
   .get('/:id', verifyToken, ctrl.verifyRental, ctrl.getDetailRental)
   .post('/:id', verifyToken, ctrl.verifyRental, ctrl.postRental)
   .get('/history', verifyToken, ctrl.getRentalHistory)
-  .get('/exchage/:id', verifyToken, ctrl.verifyRental, ctrl.getExchageAuthNum)
+  .get('/exchange/:id', verifyToken, ctrl.verifyRental, ctrl.getExchageAuthNum)
 
 export default rentalRouter
