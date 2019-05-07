@@ -33,4 +33,8 @@ const getRental: RequestHandler = async (req: Request, res: Response, next: Next
   }
 }
 
-export { getRental }
+const getDetailRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+}
+
+export { getRental, getDetailRental }
