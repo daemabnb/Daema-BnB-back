@@ -74,4 +74,8 @@ const getDetailRental: RequestHandler = async (req: Request, res: Response, next
   }).end()
 }
 
-export { verifyRental, getRental, getDetailRental }
+const postRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+}
+
+export { verifyRental, getRental, getDetailRental, postRental }

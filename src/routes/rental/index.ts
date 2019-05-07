@@ -6,5 +6,6 @@ const rentalRouter: Router = Router()
 
 rentalRouter.get('/', verifyToken, ctrl.getRental)
   .get('/:id', verifyToken, ctrl.verifyRental, ctrl.getDetailRental)
+  .post('/:id', verifyToken, ctrl.verifyRental, ctrl.postRental)
 
 export default rentalRouter

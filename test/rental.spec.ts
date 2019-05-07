@@ -63,4 +63,10 @@ describe('share test', () => {
       .get('/rental/abcdefghijkl').expect(200)
       .set('token', token)
   })
+
+  it('POST /rental/{id}', async () => {
+    await req
+      .post('/rental/abcdefghijkl').expect(201)
+      .set('token', token)
+  })
 })
