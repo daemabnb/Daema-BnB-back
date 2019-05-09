@@ -87,6 +87,12 @@ describe('share test', () => {
         resolve('1234')
       })
     })
+
+    sandbox.stub(redis, 'getReturnAuthNumber').value(() => {
+      return new Promise(resolve => {
+        resolve('1234')
+      })
+    })
   })
 
   after(() => {
@@ -134,7 +140,7 @@ describe('share test', () => {
 
   it('GET /rental/return/{id}', async () => {
     await req
-      .post('/rental/return/abcdefghijkl').expect(200)
+      .get('/rental/return/abcdefghijkl').expect(200)
       .set('token', token)
   })
 })

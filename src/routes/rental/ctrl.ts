@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { getDownloadUrl, ImageType } from '../../util/aws'
 import DB, { ShareStatus } from '../../model/index'
-import { setShareAuthNumber, getShareAuthNumber } from '../../util/redis'
+import { setShareAuthNumber, getShareAuthNumber, setReturnAuthNumber, getReturnAuthNumber } from '../../util/redis'
 import Err from '../../util/error'
 
 const db: DB = new DB()
@@ -157,5 +157,19 @@ const postExchangeAuthNum: RequestHandler = async (req: Request, res: Response, 
   }
 }
 
+const getReturnAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const shareId = req.share.id
+
+  try {
+    const authNum = await getReturnAuthNumber(shareId)
+
+    res.status(200).json({
+      authPassword: authNum
+    }).end()
+  } catch (e) {
+    next(e)
+  }
+}
+
 export { verifyRental, getRental, getDetailRental, postRental, getRentalHistory,
-  getExchangeAuthNum, postExchangeAuthNum }
+  getExchangeAuthNum, postExchangeAuthNum, getReturnAuthNum }
