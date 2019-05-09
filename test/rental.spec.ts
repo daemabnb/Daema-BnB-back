@@ -131,4 +131,10 @@ describe('share test', () => {
         authPassword: '1234'
       })
   })
+
+  it('GET /rental/return/{id}', async () => {
+    await req
+      .post('/rental/return/abcdefghijkl').expect(200)
+      .set('token', token)
+  })
 })
