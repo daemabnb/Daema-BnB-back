@@ -64,6 +64,12 @@ describe('purchase test', () => {
       })
     })
 
+    sandbox.stub(DB.prototype, 'updateSaleStatus').value(() => {
+      return new Promise(resolve => {
+        resolve()
+      })
+    })
+
     sandbox.stub(redis, 'setSaleAuthNumber').value(() => {
       return new Promise(resolve => {
         resolve()

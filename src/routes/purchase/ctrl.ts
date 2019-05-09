@@ -135,13 +135,13 @@ const postExchageAuthNum: RequestHandler = async (req: Request, res: Response, n
   try {
     const authNum = await getSaleAuthNumber(saleId)
 
-    if (authNum === null) {
+    if (authNum === null || authNum !== req.body.authPassword) {
       throw new Err('그런 번호 없어. 저리 가!', 405)
     }
 
-    res.status(201).json({
-      authPassword: authNum
-    }).end()
+    await db.updateSaleStatus(saleId, SaleStatus.selled)
+
+    res.status(201).json().end()
   } catch (e) {
     next(e)
   }

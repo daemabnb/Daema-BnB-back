@@ -73,6 +73,12 @@ class DB {
     }).exec()
   }
 
+  updateSaleStatus(saleId: string, status: SaleStatus): Promise<number> {
+    return Sale.updateOne({ _id: saleId }, {
+      $set: { status }
+    }).exec()
+  }
+
   createShare(share: IShare): Promise<ShareDocument> {
     return new Share(share).save()
   }
