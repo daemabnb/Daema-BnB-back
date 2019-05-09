@@ -125,7 +125,7 @@ const getRentalHistory: RequestHandler = async (req: Request, res: Response, nex
   }
 }
 
-const getExchageAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const getExchangeAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const shareId = req.share.id
 
   try {
@@ -139,9 +139,23 @@ const getExchageAuthNum: RequestHandler = async (req: Request, res: Response, ne
   }
 }
 
-const postExchageAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const postExchangeAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const shareId = req.share.id
 
+  try {
+    const authNum = await getShareAuthNumber(shareId)
+
+    if (authNum === null || authNum !== req.body.authPassword) {
+      throw new Err('그런 번호 없어. 저리 가!', 405)
+    }
+
+    await db.updateShareStatus(shareId, ShareStatus.onRental)
+
+    res.status(201).end()
+  } catch (e) {
+    next(e)
+  }
 }
 
 export { verifyRental, getRental, getDetailRental, postRental, getRentalHistory,
-  getExchageAuthNum, postExchageAuthNum }
+  getExchangeAuthNum, postExchangeAuthNum }

@@ -70,9 +70,21 @@ describe('share test', () => {
       })
     })
 
+    sandbox.stub(DB.prototype, 'updateShareStatus').value(() => {
+      return new Promise(resolve => {
+        resolve()
+      })
+    })
+
     sandbox.stub(redis, 'setShareAuthNumber').value(() => {
       return new Promise(resolve => {
         resolve()
+      })
+    })
+
+    sandbox.stub(redis, 'getShareAuthNumber').value(() => {
+      return new Promise(resolve => {
+        resolve('1234')
       })
     })
   })

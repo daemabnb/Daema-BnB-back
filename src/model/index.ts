@@ -62,7 +62,7 @@ class DB {
     return Sale.deleteOne({ _id: saleId }).exec()
   }
 
-  updateSaleClient(saleId: string, status: string, client: Client): Promise<number> {
+  updateSaleClient(saleId: string, status: SaleStatus, client: Client): Promise<number> {
     return Sale.updateOne({ _id: saleId }, {
       $set: {
         clientId: client.id,
@@ -101,7 +101,7 @@ class DB {
     return Share.deleteOne({ _id: shareId }).exec()
   }
 
-  updateShareClient(shareId: string, status: string, client: Client): Promise<number> {
+  updateShareClient(shareId: string, status: ShareStatus, client: Client): Promise<number> {
     return Share.updateOne({ _id: shareId }, {
       $set: {
         clientId: client.id,
@@ -109,6 +109,12 @@ class DB {
         clientLink: client.link,
         status
       }
+    }).exec()
+  }
+
+  updateShareStatus(shareId: string, status: ShareStatus): Promise<number> {
+    return Share.updateOne({ _id: shareId }, {
+      $set: { status }
     }).exec()
   }
 
