@@ -16,6 +16,12 @@ describe('share test', () => {
 
     sandbox = sinon.createSandbox()
 
+    sandbox.stub(DB.prototype, 'createShare').value(() => {
+      return new Promise(resolve => {
+        resolve()
+      })
+    })
+
     sandbox.stub(DB.prototype, 'findRentals').value(() => {
       return new Promise(resolve => {
         resolve([{
@@ -87,6 +93,12 @@ describe('share test', () => {
         resolve('1234')
       })
     })
+
+    sandbox.stub(redis, 'getReturnAuthNumber').value(() => {
+      return new Promise(resolve => {
+        resolve('1234')
+      })
+    })
   })
 
   after(() => {
@@ -126,6 +138,21 @@ describe('share test', () => {
   it('POST /rental/exchange/{id}', async () => {
     await req
       .post('/rental/exchange/abcdefghijkl').expect(201)
+      .set('token', token)
+      .send({
+        authPassword: '1234'
+      })
+  })
+
+  it('GET /rental/return/{id}', async () => {
+    await req
+      .get('/rental/return/abcdefghijkl').expect(200)
+      .set('token', token)
+  })
+
+  it('POST /rental/return/{id}', async () => {
+    await req
+      .post('/rental/return/abcdefghijkl').expect(201)
       .set('token', token)
       .send({
         authPassword: '1234'

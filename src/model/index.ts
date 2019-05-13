@@ -12,7 +12,8 @@ enum SaleStatus {
 enum ShareStatus {
   onShare = 'onShare',
   onRental = 'onRental',
-  beforeExchage = 'beforeExchage'
+  beforeExchage = 'beforeExchage',
+  completeReturn = 'completeReturn'
 }
 
 interface Client {

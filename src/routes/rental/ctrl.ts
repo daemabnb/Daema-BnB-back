@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { getDownloadUrl, ImageType } from '../../util/aws'
 import DB, { ShareStatus } from '../../model/index'
-import { setShareAuthNumber, getShareAuthNumber } from '../../util/redis'
+import { setShareAuthNumber, getShareAuthNumber, setReturnAuthNumber, getReturnAuthNumber } from '../../util/redis'
 import Err from '../../util/error'
 
 const db: DB = new DB()
@@ -157,5 +157,49 @@ const postExchangeAuthNum: RequestHandler = async (req: Request, res: Response, 
   }
 }
 
+const getReturnAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const shareId = req.share.id
+
+  try {
+    const authNum = await getReturnAuthNumber(shareId)
+
+    res.status(200).json({
+      authPassword: authNum
+    }).end()
+  } catch (e) {
+    next(e)
+  }
+}
+
+const postReturnAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const { id, name, description, price, returnDate, period, isPublic, userId, userName, userLink } = req.share
+
+  try {
+    const authNum = await getShareAuthNumber(id)
+
+    if (authNum === null || authNum !== req.body.authPassword) {
+      throw new Err('그런 번호 없어. 저리 가!', 405)
+    }
+
+    await db.updateShareStatus(id, ShareStatus.completeReturn)
+
+    await db.createShare({
+      name,
+      description,
+      price,
+      returnDate,
+      period,
+      isPublic,
+      userId,
+      userName,
+      userLink
+    })
+
+    res.status(201).json().end()
+  } catch (e) {
+    next(e)
+  }
+}
+
 export { verifyRental, getRental, getDetailRental, postRental, getRentalHistory,
-  getExchangeAuthNum, postExchangeAuthNum }
+  getExchangeAuthNum, postExchangeAuthNum, getReturnAuthNum, postReturnAuthNum }
