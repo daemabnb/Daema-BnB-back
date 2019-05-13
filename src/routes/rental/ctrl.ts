@@ -171,5 +171,35 @@ const getReturnAuthNum: RequestHandler = async (req: Request, res: Response, nex
   }
 }
 
+const postReturnAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const { id, name, description, price, returnDate, period, isPublic, userId, userName, userLink } = req.share
+
+  try {
+    const authNum = await getShareAuthNumber(id)
+
+    if (authNum === null || authNum !== req.body.authPassword) {
+      throw new Err('그런 번호 없어. 저리 가!', 405)
+    }
+
+    await db.updateShareStatus(id, ShareStatus.completeReturn)
+
+    await db.createShare({
+      name,
+      description,
+      price,
+      returnDate,
+      period,
+      isPublic,
+      userId,
+      userName,
+      userLink
+    })
+
+    res.status(201).json().end()
+  } catch (e) {
+    next(e)
+  }
+}
+
 export { verifyRental, getRental, getDetailRental, postRental, getRentalHistory,
-  getExchangeAuthNum, postExchangeAuthNum, getReturnAuthNum }
+  getExchangeAuthNum, postExchangeAuthNum, getReturnAuthNum, postReturnAuthNum }

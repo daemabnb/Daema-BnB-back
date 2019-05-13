@@ -11,5 +11,6 @@ rentalRouter.get('/', verifyToken, ctrl.getRental)
   .get('/exchange/:id', verifyToken, ctrl.verifyRental, ctrl.getExchangeAuthNum)
   .post('/exchange/:id', verifyToken, ctrl.verifyRental, ctrl.postExchangeAuthNum)
   .get('/return/:id', verifyToken, ctrl.verifyRental, ctrl.getReturnAuthNum)
+  .post('/return/:id', verifyToken, ctrl.verifyRental, ctrl.postReturnAuthNum)
 
 export default rentalRouter
