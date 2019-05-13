@@ -1,5 +1,12 @@
-import { CronJob } from 'cron'
+import { schedule, ScheduleOptions } from 'node-cron'
 
-export default new CronJob('0 0 0 * * *', () => {
+const scheduleOptions: ScheduleOptions = {
+  scheduled: false,
+  timezone: 'Asia/Seoul'
+}
 
-})
+export default (func) => {
+  schedule('0 0 * * * *', () => {
+    func()
+  }, scheduleOptions)
+}
