@@ -2,6 +2,7 @@ import * as mongoose from 'mongoose'
 import * as express from 'express'
 import { mongoUri } from './config'
 import logger from './util/logger'
+import slack from './util/slack'
 import router from './routes/index'
 import passport from './util/passport'
 import Err from './util/error'
@@ -33,6 +34,8 @@ app.use(express.json())
   })
   .use((err: Err, req: express.Request, res: express.Response, next: express.NextFunction) => {
     logger.error(err.stack as string)
+    slack(err.stack as string)
+
     res.status(err.status || 500).end()
   })
 

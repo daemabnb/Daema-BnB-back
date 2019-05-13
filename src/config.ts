@@ -12,5 +12,7 @@ const clientID = process.env.FACEBOOK_CLIENT_ID as string
 const clientSecret = process.env.FACEBOOK_CLIENT_SECRET as string
 const accessKey = process.env.ACCESS_KEY as string
 const secretAccessKey = process.env.SECRET_ACCESS_KEY as string
+const slackUrl = process.env.SLACK_URL as string
 
-export { keyPath, certPath, mongoUri, jwtSecret, emailId, emailPw, clientID, clientSecret, accessKey, secretAccessKey }
+export { keyPath, certPath, mongoUri, jwtSecret, emailId,
+  emailPw, clientID, clientSecret, accessKey, secretAccessKey, slackUrl }
