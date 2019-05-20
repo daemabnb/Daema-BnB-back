@@ -1,8 +1,48 @@
+import * as mongoose from 'mongoose'
 import * as express from 'express'
+import * as cors from 'cors'
+import { mongoUri } from './config'
+import logger from './util/logger'
+import slack from './util/slack'
+import router from './routes/index'
+import { updateShareStatusByTime } from './routes/rental/ctrl'
+import passport from './util/passport'
+import Err from './util/error'
+import { SaleDocument, ShareDocument } from './model/index'
+import cron from './util/cron'
+
+const mongooseOptions: mongoose.ConnectionOptions = {
+  useNewUrlParser: true
+}
+
+mongoose.connect(mongoUri, mongooseOptions)
+  .then(() => logger.info('connected mongoose'))
+  .catch((e: Err) => logger.error(e.stack as string))
+
+declare module 'express' {
+  interface Request {
+    sale: SaleDocument
+    share: ShareDocument
+  }
+}
+
 const app: express.Application = express()
 
-app.get('/', (req: express.Request, res: express.Response) => {
-  res.send('hello world!').end()
-})
+app.use(cors())
+  .use(express.json())
+  .use(express.urlencoded({ extended: false }))
+  .use(passport.initialize())
+  .use(router)
+  .use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+    next(new Err(`Not found - ${req.originalUrl}`, 404))
+  })
+  .use((err: Err, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    logger.error(err.stack as string)
+    slack(err.stack as string)
+
+    res.status(err.status || 500).end()
+  })
+
+cron('0 0 * * * *', updateShareStatusByTime)
 
 export default app

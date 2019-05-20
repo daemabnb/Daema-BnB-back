@@ -1,0 +1,47 @@
+language: node_js
+node_js:
+  - 10.15
+
+services:
+  - redis-server
+
+install:
+  - npm install
+
+script:
+  - tsc
+  - npm test
+
+before_deploy:
+  - if ["$TRAVIS_PULL_REQUEST" == "true"]; then exit 0; fi
+  - zip -r -q daemabnb-api *
+  - mkdir -p deploy
+  - mv daemabnb-api.zip deploy/daemabnb-api.zip
+
+deploy:
+  - provider: s3
+    local_dir: deploy
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: pair-goal-travis
+    region: ap-northeast-2
+    skip_cleanup: true 
+    acl: public_read
+    wait-until-deployed: true
+    on:
+      repo: daemabnb/Daema-BnB-back
+      branch: master
+
+  - provider: codedeploy
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: pair-goal-travis 
+    key: daemabnb-api.zip
+    bundle_type: zip
+    application: travis-codeDeploy-service
+    deployment_group: travis-codeDeploy-group
+    region: ap-northeast-2
+    wait-until-deployed: true
+    on:
+      repo: daemabnb/Daema-BnB-back
+      branch: master
