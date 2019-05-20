@@ -1,8 +1,7 @@
 #!/bin/bash
 
-cp /home/ubuntu/.env /home/ubuntu/daemabnb-deploy/.env 
-cp /home/ubuntu/Gemfile /home/ubuntu/daemabnb-deploy/Gemfile
-cd /home/ubuntu/daemabnb-deploy
+cp /home/ubuntu/.env /home/ubuntu/daemabnb-api/.env
+cd /home/ubuntu/daemabnb-api
 
 HOST="54.163.77.46"
 
