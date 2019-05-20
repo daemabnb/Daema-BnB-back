@@ -13,7 +13,8 @@ enum ShareStatus {
   onShare = 'onShare',
   onRental = 'onRental',
   beforeExchage = 'beforeExchage',
-  completeReturn = 'completeReturn'
+  completeReturn = 'completeReturn',
+  end = 'end'
 }
 
 interface Client {
@@ -121,6 +122,15 @@ class DB {
 
   updateShareStatus(shareId: string, status: ShareStatus): Promise<number> {
     return Share.updateOne({ _id: shareId }, {
+      $set: { status }
+    }).exec()
+  }
+
+  updateShareStatusByTime(time: number, status: ShareStatus) {
+    return Share.updateMany({
+      returnDate: { $lt: time },
+      status: { $ne: ShareStatus.end }
+    }, {
       $set: { status }
     }).exec()
   }

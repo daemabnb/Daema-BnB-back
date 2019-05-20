@@ -1,12 +1,12 @@
 import { schedule, ScheduleOptions } from 'node-cron'
 
 const scheduleOptions: ScheduleOptions = {
-  scheduled: false,
+  scheduled: true,
   timezone: 'Asia/Seoul'
 }
 
-export default (func) => {
-  schedule('0 0 * * * *', () => {
+export default (cronExpression: string = '0 0 * * * *', func: Function) => {
+  schedule(cronExpression, () => {
     func()
   }, scheduleOptions)
 }

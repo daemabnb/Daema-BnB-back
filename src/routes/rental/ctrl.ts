@@ -3,6 +3,7 @@ import { getDownloadUrl, ImageType } from '../../util/aws'
 import DB, { ShareStatus } from '../../model/index'
 import { setShareAuthNumber, getShareAuthNumber, setReturnAuthNumber, getReturnAuthNumber } from '../../util/redis'
 import Err from '../../util/error'
+import logger from '../../util/logger';
 
 const db: DB = new DB()
 
@@ -201,5 +202,15 @@ const postReturnAuthNum: RequestHandler = async (req: Request, res: Response, ne
   }
 }
 
+const updateShareStatusByTime = async () => {
+  const now = Date.now()
+
+  try {
+    await db.updateShareStatusByTime(now, ShareStatus.end)
+  } catch (e) {
+    logger.error(e.stack)
+  }
+}
+
 export { verifyRental, getRental, getDetailRental, postRental, getRentalHistory,
-  getExchangeAuthNum, postExchangeAuthNum, getReturnAuthNum, postReturnAuthNum }
+  getExchangeAuthNum, postExchangeAuthNum, getReturnAuthNum, postReturnAuthNum, updateShareStatusByTime }
