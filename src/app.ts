@@ -4,9 +4,11 @@ import { mongoUri } from './config'
 import logger from './util/logger'
 import slack from './util/slack'
 import router from './routes/index'
+import { updateShareStatusByTime } from './routes/rental/ctrl'
 import passport from './util/passport'
 import Err from './util/error'
 import { SaleDocument, ShareDocument } from './model/index'
+import cron from './util/cron'
 
 const mongooseOptions: mongoose.ConnectionOptions = {
   useNewUrlParser: true
@@ -38,5 +40,7 @@ app.use(express.json())
 
     res.status(err.status || 500).end()
   })
+
+cron('0 0 * * * *', updateShareStatusByTime)
 
 export default app

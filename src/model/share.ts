@@ -4,9 +4,9 @@ interface IShare {
   name: string
   description: string
   price: string
-  returnDate: Date
+  returnDate: Number
   period: number
-  sharedDate?: Date
+  sharedDate?: Number
   isPublic: boolean
   status?: string
   images?: string[]
@@ -36,7 +36,7 @@ const ShareSchema: Schema = new Schema({
     required: true
   },
   returnDate: {
-    type: Date,
+    type: Number,
     required: true
   },
   period: {
