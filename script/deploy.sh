@@ -15,5 +15,5 @@ if [ "$(docker images | grep "daemabnb-api")" != "" ]; then
   docker rmi -f $(docker images | grep "daemabnb-api")
 fi
 
-sudo build -t daemabnb-api .
+sudo docker build -t daemabnb-api .
 sudo docker run -p 3333:3000 -d daemabnb-api
