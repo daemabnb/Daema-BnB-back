@@ -1,5 +1,6 @@
 import * as mongoose from 'mongoose'
 import * as express from 'express'
+import * as cors from 'cors'
 import { mongoUri } from './config'
 import logger from './util/logger'
 import slack from './util/slack'
@@ -27,7 +28,8 @@ declare module 'express' {
 
 const app: express.Application = express()
 
-app.use(express.json())
+app.use(cors())
+  .use(express.json())
   .use(express.urlencoded({ extended: false }))
   .use(passport.initialize())
   .use(router)
