@@ -9,12 +9,11 @@ install:
   - npm install
 
 script:
-  - tsc
   - npm test
 
 before_deploy:
   - if ["$TRAVIS_PULL_REQUEST" == "true"]; then exit 0; fi
-  - zip -r -q daemabnb-api *
+  - zip -r -q daemabnb-api .
   - mkdir -p deploy
   - mv daemabnb-api.zip deploy/daemabnb-api.zip
 
