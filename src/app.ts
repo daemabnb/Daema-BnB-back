@@ -33,9 +33,7 @@ app.use(cors())
   .use(express.urlencoded({ extended: false }))
   .use(passport.initialize())
   .use(router)
-  .use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-    next(new Err(`Not found - ${req.originalUrl}`, 404))
-  })
+  .use((req: express.Request, res: express.Response) => res.status(404).end())
   .use((err: Err, req: express.Request, res: express.Response, next: express.NextFunction) => {
     logger.error(err.stack as string)
     slack(err.stack as string)
