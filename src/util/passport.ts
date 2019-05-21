@@ -1,6 +1,6 @@
 import * as passport from 'passport'
 import { Strategy } from 'passport-facebook'
-import { clientID, clientSecret } from '../config'
+import { clientID, clientSecret, facebookCallback } from '../config'
 import { User, UserDocument } from '../model/user'
 
 class UserInfo {
@@ -24,7 +24,7 @@ class UserInfo {
 const facebookOptions = {
   clientID,
   clientSecret,
-  callbackURL: '/user/signin/facebook/callback'
+  callbackURL: facebookCallback
 }
 
 const facebookStrategy = new Strategy(facebookOptions, async (accessToken, refreshToken, profile, done) => {
