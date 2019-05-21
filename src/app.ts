@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose'
 import * as express from 'express'
 import * as cors from 'cors'
+import * as helmet from 'helmet'
 import { mongoUri } from './config'
 import logger from './util/logger'
 import slack from './util/slack'
@@ -29,13 +30,12 @@ declare module 'express' {
 const app: express.Application = express()
 
 app.use(cors())
+  .use(helmet())
   .use(express.json())
   .use(express.urlencoded({ extended: false }))
   .use(passport.initialize())
   .use(router)
-  .use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-    next(new Err(`Not found - ${req.originalUrl}`, 404))
-  })
+  .use((req: express.Request, res: express.Response) => res.status(404).end())
   .use((err: Err, req: express.Request, res: express.Response, next: express.NextFunction) => {
     logger.error(err.stack as string)
     slack(err.stack as string)
