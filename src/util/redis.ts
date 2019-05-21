@@ -1,6 +1,7 @@
 import * as Redis from 'ioredis'
+import { redisHost, redisPort } from '../config'
 
-const redisClient: Redis.Redis = new Redis()
+const redisClient: Redis.Redis = new Redis(redisPort, redisHost)
 
 const addAuthWaitingList =
 async (email: string, authNum: string, expireTime: number = 60 * 60 * 24 * 3): Promise<void> => {
