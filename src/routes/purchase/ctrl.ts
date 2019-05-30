@@ -145,7 +145,7 @@ const postExchageAuthNum: RequestHandler = async (req: Request, res: Response, n
 
     await db.updateSaleStatus(saleId, SaleStatus.selled)
 
-    res.status(201).json().end()
+    res.status(201).end()
   } catch (e) {
     next(e)
   }
