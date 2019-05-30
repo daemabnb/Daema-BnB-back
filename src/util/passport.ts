@@ -38,7 +38,7 @@ const facebookStrategy = new Strategy(facebookOptions, async (accessToken, refre
       done(null, true, userInfo)
     } else {
       const { id, displayName, profileUrl } = profile
-      const userInfo = new UserInfo(id, displayName, profileUrl as string, accessToken)
+      const userInfo = new UserInfo(id, displayName, profileUrl as string, accessToken, false)
 
       done(null, false, userInfo)
     }

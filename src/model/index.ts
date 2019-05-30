@@ -112,6 +112,7 @@ class DB {
   updateShareClient(shareId: string, status: ShareStatus, client: Client): Promise<number> {
     return Share.updateOne({ _id: shareId }, {
       $set: {
+        sharedDate: Date.now(),
         clientId: client.id,
         clientName: client.name,
         clientLink: client.link,
