@@ -54,8 +54,8 @@ const postShare: RequestHandler = async (req: Request, res: Response, next: Next
 }
 
 const getDetailShare: RequestHandler = (req: Request, res: Response, next: NextFunction): void => {
-  const { _id, name, description, price, status, returnDate, period, isPublic, images, userId, userName, userLink }
-  = req.share
+  const { _id, name, description, price, status, returnDate, sharedDate, period, isPublic, images,
+    userId, userName, userLink, clientId, clientName, clientLink } = req.share
 
   const downloadUrls: string[] = getDownloadUrl(ImageType.Share, _id, images as string[])
 
@@ -67,12 +67,16 @@ const getDetailShare: RequestHandler = (req: Request, res: Response, next: NextF
     shareStatus: status,
     itemImages: downloadUrls,
     isFree: price === '0' ? true : false,
+    sharedDate,
     returnDate,
     period,
     isPublic,
-    userId,
-    userName,
-    userLink
+    ownerId: userId,
+    ownerName: userName,
+    ownerLink: userLink,
+    clientId,
+    clientName,
+    clientLink
   }).end()
 }
 
@@ -145,7 +149,8 @@ const getShareHistory: RequestHandler = async (req: Request, res: Response, next
         returnDate: share.returnDate,
         sharedDate: share.sharedDate,
         period: share.period,
-        isPublic: share.isPublic
+        isPublic: share.isPublic,
+        clientName: share.clientName
       }
     })
 
