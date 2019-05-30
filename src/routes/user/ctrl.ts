@@ -41,7 +41,7 @@ const signinFacebookCallback: RequestHandler = (req: Request, res: Response, nex
     const token = createToken(id, displayName, profileUrl, email)
 
     if (user === true) {
-      return res.status(200).json({ 
+      return res.status(200).json({
         nickname: displayName,
         isAdmin,
         token
