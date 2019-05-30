@@ -55,8 +55,8 @@ const getRental: RequestHandler = async (req: Request, res: Response, next: Next
 }
 
 const getDetailRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { _id, name, description, price, status, images, returnDate, period, isPublic, userId, userName, userLink }
-  = req.share
+  const { _id, name, description, price, status, images, returnDate, sharedDate, period, isPublic,
+    userId, userName, userLink, clientId, clientName, clientLink } = req.share
 
   const downloadUrls: string[] = getDownloadUrl(ImageType.Share,_id, images as string[])
 
@@ -68,11 +68,16 @@ const getDetailRental: RequestHandler = async (req: Request, res: Response, next
     saleStatus: status,
     itemImages: downloadUrls,
     isFree: price === '0' ? true : false,
+    isPublic,
+    sharedDate,
     returnDate,
     period,
-    userId,
-    userName,
-    userLink
+    ownerId: userId,
+    ownerName: userName,
+    ownerLink: userLink,
+    clientId,
+    clientName,
+    clientLink
   }).end()
 }
 
@@ -116,7 +121,8 @@ const getRentalHistory: RequestHandler = async (req: Request, res: Response, nex
         sharedDate: rental.sharedDate,
         returnDate: rental.returnDate,
         period: rental.period,
-        isPublic: rental.isPublic
+        isPublic: rental.isPublic,
+        ownerName: rental.userName
       }
     })
 
