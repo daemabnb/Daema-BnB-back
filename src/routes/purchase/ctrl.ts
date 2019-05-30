@@ -51,7 +51,8 @@ const getPurchase: RequestHandler = async (req: Request, res: Response, next: Ne
 }
 
 const getDetailPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { _id, name, description, price, status, images, userId, userName, userLink } = req.sale
+  const { _id, name, description, price, status, images, userId, userName, userLink, clientId, clientName, clientLink }
+    = req.sale
 
   const downloadUrls: string[] = getDownloadUrl(ImageType.Sale,_id, images as string[])
 
@@ -63,9 +64,12 @@ const getDetailPurchase: RequestHandler = async (req: Request, res: Response, ne
     saleStatus: status,
     itemImages: downloadUrls,
     isFree: price === '0' ? true : false,
-    userId,
-    userName,
-    userLink
+    ownerId: userId,
+    ownerName: userName,
+    ownerLink: userLink,
+    clientId,
+    clientName,
+    clientLink
   }).end()
 }
 
