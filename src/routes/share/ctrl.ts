@@ -68,7 +68,7 @@ const getDetailShare: RequestHandler = (req: Request, res: Response, next: NextF
     itemImages: downloadUrls,
     isFree: price === '0' ? true : false,
     sharedDate,
-    returnDate,
+    deadline: returnDate,
     period,
     isPublic,
     ownerId: userId,
@@ -82,7 +82,7 @@ const getDetailShare: RequestHandler = (req: Request, res: Response, next: NextF
 
 const putShare: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const itemId = req.params.id
-  const { itemName, itemDescription, itemPrice, returnDate, period, isPublic, images } = req.body
+  const { itemName, itemDescription, itemPrice, deadline, period, isPublic, images } = req.body
   const shareStatus = req.share.status as string
   const { id, displayName, profileUrl } = req.user
 
@@ -97,7 +97,7 @@ const putShare: RequestHandler = async (req: Request, res: Response, next: NextF
       name: itemName,
       description: itemDescription,
       price: itemPrice,
-      returnDate,
+      returnDate: deadline,
       period,
       isPublic,
       userId: id,
@@ -146,7 +146,7 @@ const getShareHistory: RequestHandler = async (req: Request, res: Response, next
         itemDescription: share.description,
         shareStatus: share.status,
         registerDate: share.createdAt,
-        returnDate: share.returnDate,
+        deadline: share.returnDate,
         sharedDate: share.sharedDate,
         period: share.period,
         isPublic: share.isPublic,

@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { getDownloadUrl, ImageType } from '../../util/aws'
 import DB, { ShareStatus } from '../../model/index'
-import { setShareAuthNumber, getShareAuthNumber, setReturnAuthNumber, getReturnAuthNumber } from '../../util/redis'
+import { setShareAuthNumber, getShareAuthNumber, getReturnAuthNumber } from '../../util/redis'
 import Err from '../../util/error'
-import logger from '../../util/logger';
+import logger from '../../util/logger'
 
 const db: DB = new DB()
 
@@ -40,9 +40,9 @@ const getRental: RequestHandler = async (req: Request, res: Response, next: Next
         itemId: _id,
         itemName: name,
         itemPrice: price,
-        itemImage: image,
+        itemImages: image,
         isFree: price === '0' ? true : false,
-        returnDate,
+        deadline: returnDate,
         period,
         isPublic
       }
@@ -70,7 +70,7 @@ const getDetailRental: RequestHandler = async (req: Request, res: Response, next
     isFree: price === '0' ? true : false,
     isPublic,
     sharedDate,
-    returnDate,
+    deadline: returnDate,
     period,
     ownerId: userId,
     ownerName: userName,
@@ -112,17 +112,19 @@ const getRentalHistory: RequestHandler = async (req: Request, res: Response, nex
     const rentals = await db.findOwnRental(userId, offset, limit)
 
     const responseRentals = rentals.map(rental => {
+      const { _id, name, description, status, createdAt, sharedDate, returnDate, period, isPublic, userName } = rental
+
       return {
-        itemId: rental._id,
-        itemName: rental.name,
-        itemDescription: rental.description,
-        shareStatus: rental.status,
-        registerDate: rental.createdAt,
-        sharedDate: rental.sharedDate,
-        returnDate: rental.returnDate,
-        period: rental.period,
-        isPublic: rental.isPublic,
-        ownerName: rental.userName
+        itemId: _id,
+        itemName: name,
+        itemDescription: description,
+        shareStatus: status,
+        registerDate: createdAt,
+        sharedDate: sharedDate,
+        deadline: returnDate,
+        period: period,
+        isPublic: isPublic,
+        ownerName: userName
       }
     })
 

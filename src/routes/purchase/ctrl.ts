@@ -39,7 +39,7 @@ const getPurchase: RequestHandler = async (req: Request, res: Response, next: Ne
         itemId: _id,
         itemName: name,
         itemPrice: price,
-        itemImage: image,
+        itemImages: image,
         isFree: price === '0' ? true : false
       }
     })
