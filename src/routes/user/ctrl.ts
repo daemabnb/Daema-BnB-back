@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
-import DB from '../../model/index'
+import DB, { UserDocument } from '../../model/index'
 import mailer from '../../util/mailer'
 import * as redis from '../../util/redis'
-import passport from '../../util/passport'
+import { getRequest } from '../../util/request'
 import { createToken } from '../../util/jwt'
-import logger from '../../util/logger'
 
 const db: DB = new DB()
 
@@ -22,35 +21,34 @@ const postAuthemail: RequestHandler = async (req: Request, res: Response, next: 
   }
 }
 
-const getSigninFacebook: RequestHandler = passport.authenticate('facebook', {
-  session: false,
-  scope: ['public_profile', 'user_link']
-})
+const getSigninFacebook: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { accessToken } = req.body
+    const uri = `https://graph.facebook.com/me?fields=id,name,link&access_token=${accessToken}`
 
-const signinFacebookCallback: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
-  passport.authenticate('facebook', {
-    session: false
-  }, (err, user, info) => {
-    logger.info(JSON.stringify(info))
+    const response = await getRequest(uri)
+    const responseBody = await response.json()
+    const { id, name, profileUrl } = responseBody
 
-    if (err) {
-      next(err)
-    }
+    const user = await db.findUserById(id) as UserDocument
 
-    const { id, displayName, profileUrl, email, isAdmin } = info
-    const token = createToken(id, displayName, profileUrl, email)
+    if (user) {
+      const token = createToken(user.profileId, user.displayName, user.profileId, user.email)
 
-    if (user === true) {
-      return res.status(200).json({
-        nickname: displayName,
-        isAdmin,
-        token
+      res.status(200).json({
+        token,
+        isAdmin: user.isAdmin
       }).end()
+
+      return
     }
+
+    const token = createToken(id, name, profileUrl)
 
     res.status(201).json({ token }).end()
-
-  })(req, res, next)
+  } catch (error) {
+    next(error)
+  }
 }
 
 const postSignup: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -81,4 +79,4 @@ const postSignup: RequestHandler = async (req: Request, res: Response, next: Nex
   }
 }
 
-export { postAuthemail, getSigninFacebook, signinFacebookCallback, postSignup }
+export { postAuthemail, getSigninFacebook, postSignup }
