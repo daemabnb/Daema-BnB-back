@@ -1,17 +1,16 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
+import { Share } from '../../model/share'
+import { ShareStatus } from '../../types/Share'
 import { getUploadUrl, getDownloadUrl, ImageType } from '../../util/aws'
 import { getImageNames, getImageLinks } from '../../util/image'
 import {} from '../../util/redis'
 import Err from '../../util/error'
-import DB, { ShareStatus } from '../../model/index'
-
-const db: DB = new DB()
 
 export const verifyShare: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const itemId = req.params.id
 
   try {
-    const share = await db.findShareById(itemId)
+    const share = await Share.findShareById(itemId)
 
     if (share === null) {
       throw new Err('존재하지 않는 share id. 저리 가!', 405)
@@ -32,7 +31,7 @@ export const postShare: RequestHandler = async (req: Request, res: Response, nex
   try {
     const imageNames = await getImageNames(images)
 
-    const share = await db.createShare({
+    const share = await Share.createShare({
       name: itemName,
       description: itemDescription,
       price: itemPrice,
@@ -93,7 +92,7 @@ export const putShare: RequestHandler = async (req: Request, res: Response, next
 
     const changedImages = await getImageNames(images)
 
-    await db.updateShare(itemId, {
+    await Share.updateShare(itemId, {
       name: itemName,
       description: itemDescription,
       price: itemPrice,
@@ -124,7 +123,7 @@ export const deleteShare: RequestHandler = async (req: Request, res: Response, n
       throw new Err('동작 그만 밑장 빼기냐. 어디서 삭제를 시도해?', 405)
     }
 
-    await db.deleteShare(itemId)
+    await Share.deleteShare(itemId)
 
     res.status(204).end()
   } catch (e) {
@@ -137,7 +136,7 @@ export const getShareHistory: RequestHandler = async (req: Request, res: Respons
   const userId = req.user.id
 
   try {
-    const shares = await db.findOwnShares(userId, parseInt(offset, 10), parseInt(limit, 10))
+    const shares = await Share.findOwnShares(userId, parseInt(offset, 10), parseInt(limit, 10))
 
     const responseShares = shares.map(share => {
       return {

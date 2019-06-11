@@ -1,17 +1,16 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
+import { Share } from '../../model/share'
+import { ShareStatus } from '../../types/Share'
 import { getDownloadUrl, ImageType } from '../../util/aws'
-import DB, { ShareStatus } from '../../model/index'
 import { setShareAuthNumber, getShareAuthNumber, getReturnAuthNumber } from '../../util/redis'
 import Err from '../../util/error'
 import logger from '../../util/logger'
-
-const db: DB = new DB()
 
 export const verifyRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const itemId = req.params.id
 
   try {
-    const share = await db.findShareById(itemId)
+    const share = await Share.findShareById(itemId)
 
     if (share === null) {
       throw new Err('존재하지 않는 sale id. 저리 가!', 405)
@@ -29,7 +28,7 @@ export const getRental: RequestHandler = async (req: Request, res: Response, nex
   const { offset, limit } = req.query
 
   try {
-    const shares = await db.findRentals(parseInt(offset, 10), parseInt(limit, 10))
+    const shares = await Share.findRentals(parseInt(offset, 10), parseInt(limit, 10))
 
     const responseSales = shares.map(share => {
       const { _id, name, price, returnDate, period, isPublic } = share
@@ -90,7 +89,7 @@ export const postRental: RequestHandler = async (req: Request, res: Response, ne
       throw new Err('안 팔아. 저리 가!', 405)
     }
 
-    await db.updateShareClient(_id, ShareStatus.beforeExchage, {
+    await Share.updateShareClient(_id, ShareStatus.beforeExchage, {
       id,
       name: displayName,
       link: profileUrl
@@ -109,7 +108,7 @@ export const getRentalHistory: RequestHandler = async (req: Request, res: Respon
   const userId = req.user.id
 
   try {
-    const rentals = await db.findOwnRental(userId, offset, limit)
+    const rentals = await Share.findOwnRental(userId, offset, limit)
 
     const responseRentals = rentals.map(rental => {
       const { _id, name, description, status, createdAt, sharedDate, returnDate, period, isPublic, userName } = rental
@@ -158,7 +157,7 @@ export const postExchangeAuthNum: RequestHandler = async (req: Request, res: Res
       throw new Err('그런 번호 없어. 저리 가!', 405)
     }
 
-    await db.updateShareStatus(shareId, ShareStatus.onRental)
+    await Share.updateShareStatus(shareId, ShareStatus.onRental)
 
     res.status(201).end()
   } catch (e) {
@@ -190,9 +189,9 @@ export const postReturnAuthNum: RequestHandler = async (req: Request, res: Respo
       throw new Err('그런 번호 없어. 저리 가!', 405)
     }
 
-    await db.updateShareStatus(id, ShareStatus.completeReturn)
+    await Share.updateShareStatus(id, ShareStatus.completeReturn)
 
-    await db.createShare({
+    await Share.createShare({
       name,
       description,
       price,
@@ -214,7 +213,7 @@ export const updateShareStatusByTime = async () => {
   const now = Date.now()
 
   try {
-    await db.updateShareStatusByTime(now, ShareStatus.end)
+    await Share.updateShareStatusByTime(now, ShareStatus.end)
   } catch (e) {
     logger.error(e.stack)
   }

@@ -1,16 +1,15 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
+import { Sale } from '../../model/sale'
+import { SaleStatus } from '../../types/Sale'
 import { getDownloadUrl, ImageType } from '../../util/aws'
 import { setSaleAuthNumber, getSaleAuthNumber } from '../../util/redis'
 import Err from '../../util/error'
-import DB, { SaleStatus } from '../../model/index'
-
-const db: DB = new DB()
 
 export const verifyPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const itemId = req.params.id
 
   try {
-    const sale = await db.findSaleById(itemId)
+    const sale = await Sale.findSaleById(itemId)
 
     if (sale === null) {
       throw new Err('존재하지 않는 sale id. 저리 가!', 405)
@@ -28,7 +27,7 @@ export const getPurchase: RequestHandler = async (req: Request, res: Response, n
   const { offset, limit } = req.query
 
   try {
-    const sales = await db.findPurchases(parseInt(offset, 10), parseInt(limit, 10))
+    const sales = await Sale.findPurchases(parseInt(offset, 10), parseInt(limit, 10))
 
     const responseSales = sales.map(sale => {
       const { _id, name, price } = sale
@@ -82,7 +81,7 @@ export const postPurchase: RequestHandler = async (req: Request, res: Response, 
       throw new Err('안 팔아. 저리 가!', 405)
     }
 
-    await db.updateSaleClient(_id, SaleStatus.beforeExchage, {
+    await Sale.updateSaleClient(_id, SaleStatus.beforeExchage, {
       id,
       name: displayName,
       link: profileUrl
@@ -101,7 +100,7 @@ export const getPurchaseHistory: RequestHandler = async (req: Request, res: Resp
   const userId = req.user.id
 
   try {
-    const purchases = await db.findOwnPurchase(userId, offset, limit)
+    const purchases = await Sale.findOwnPurchase(userId, offset, limit)
 
     const responsePurchases = purchases.map(purchase => {
       return {
@@ -143,7 +142,7 @@ export const postExchageAuthNum: RequestHandler = async (req: Request, res: Resp
       throw new Err('그런 번호 없어. 저리 가!', 405)
     }
 
-    await db.updateSaleStatus(saleId, SaleStatus.selled)
+    await Sale.updateSaleStatus(saleId, SaleStatus.selled)
 
     res.status(201).end()
   } catch (e) {

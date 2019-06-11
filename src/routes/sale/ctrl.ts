@@ -1,17 +1,16 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
+import { Sale } from '../../model/sale'
+import { SaleStatus } from '../../types/Sale'
 import { getUploadUrl, getDownloadUrl, ImageType } from '../../util/aws'
 import Err from '../../util/error'
 import { getImageNames, getImageLinks } from '../../util/image'
-import DB, { SaleStatus } from '../../model/index'
-
-const db: DB = new DB()
 
 export const verifySale: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
   const itemId = req.params.id
   const userId = req.user.id
 
   try {
-    const sale = await db.findSaleById(itemId)
+    const sale = await Sale.findSaleById(itemId)
 
     if (sale === null) {
       throw new Err('존재하지 않는 sale id. 저리 가!', 405)
@@ -37,7 +36,7 @@ export const postSale: RequestHandler = async (req: Request, res: Response, next
   try {
     const imageNames = await getImageNames(images)
 
-    const sale = await db.createSale({
+    const sale = await Sale.createSale({
       name: itemName,
       description: itemDescription,
       price: itemPrice,
@@ -97,7 +96,7 @@ export const putSale: RequestHandler = async (req: Request, res: Response, next:
 
     const changedImages = await getImageNames(images)
 
-    await db.updateSale(itemId, {
+    await Sale.updateSale(itemId, {
       name: itemName,
       description: itemDescription,
       price: itemPrice,
@@ -125,7 +124,7 @@ export const deleteSale: RequestHandler = async (req: Request, res: Response, ne
       throw new Err('동작 그만 밑장 빼기냐. 어디서 삭제를 시도해?', 405)
     }
 
-    await db.deleteSale(itemId)
+    await Sale.deleteSale(itemId)
 
     res.status(204).end()
   } catch (e) {
@@ -138,7 +137,7 @@ export const getSaleHistory: RequestHandler = async (req: Request, res: Response
   const userId = req.user.id
 
   try {
-    const sales = await db.findOwnSales(userId, parseInt(offset, 10), parseInt(limit, 10))
+    const sales = await Sale.findOwnSales(userId, parseInt(offset, 10), parseInt(limit, 10))
 
     const responseSales = sales.map(sale => {
       return {

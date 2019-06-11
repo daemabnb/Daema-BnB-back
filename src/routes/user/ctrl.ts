@@ -1,12 +1,10 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { User } from '../../model/user'
-import DB, { UserDocument } from '../../model/index'
+import { UserDocument } from '../../types/User'
 import mailer from '../../util/mailer'
 import * as redis from '../../util/redis'
 import { getRequest } from '../../util/request'
 import { createToken } from '../../util/jwt'
-
-const db: DB = new DB()
 
 export const postAuthemail: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { email } = req.body
@@ -31,7 +29,7 @@ export const getSigninFacebook: RequestHandler = async (req: Request, res: Respo
     const responseBody = await response.json()
     const { id, name, profileUrl } = responseBody
 
-    const user = await db.findUserById(id) as UserDocument
+    const user = await User.findUserById(id) as UserDocument
 
     if (user) {
       const token = createToken(user.profileId, user.displayName, user.profileId, user.email)
@@ -65,7 +63,7 @@ export const postSignup: RequestHandler = async (req: Request, res: Response, ne
 
     const { id, displayName, profileUrl } = req.user
 
-    await db.createUser({
+    await User.createUser({
       profileId: id,
       displayName,
       email,
