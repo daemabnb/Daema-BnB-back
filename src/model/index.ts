@@ -1,7 +1,12 @@
-import { User, IUser, UserDocument } from './user'
-import { Sale, ISale, SaleDocument } from './sale'
-import { Share, IShare, ShareDocument } from './share'
-import { Image, IImage, ImageDocument } from './image'
+import { User } from './user'
+import { Sale } from './sale'
+import { Share } from './share'
+import { Image } from './image'
+import { IUser, UserDocument } from '../types/User'
+import { ISale, SaleDocument } from '../types/Sale'
+import { IShare, ShareDocument } from '../types/Share'
+import { IImage, ImageDocument } from '../types/Image'
+import Client from '../types/Client'
 
 export enum SaleStatus {
   onSale = 'onSale',
@@ -15,12 +20,6 @@ export enum ShareStatus {
   beforeExchage = 'beforeExchage',
   completeReturn = 'completeReturn',
   end = 'end'
-}
-
-interface Client {
-  id: string
-  name: string
-  link: string
 }
 
 export default class DB {

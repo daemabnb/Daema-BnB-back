@@ -1,16 +1,5 @@
-import { Schema, Model, Document, model } from 'mongoose'
-
-export interface IUser {
-  profileId: string,
-  displayName: string,
-  email: string,
-  profileUrl: string,
-  isAdmin?: boolean,
-  createdAt?: Date,
-  updatedAt?: Date
-}
-
-export interface UserDocument extends Document, IUser {}
+import { Schema, Model, model } from 'mongoose'
+import { IUser, UserDocument, UserModel } from '../types/User'
 
 const UserSchema: Schema = new Schema({
   profileId: {
@@ -44,4 +33,16 @@ const UserSchema: Schema = new Schema({
   }
 })
 
-export const User: Model<UserDocument> = model<UserDocument>('User', UserSchema)
+UserSchema.statics.createUser = (user: IUser): Promise<UserDocument> => {
+  return new User(user).save()
+}
+
+UserSchema.statics.findUserById = (userId: string): Promise<UserDocument | null> => {
+  return User.findById(userId).exec()
+}
+
+UserSchema.statics.findUserByProfileId = (profileId: string): Promise<UserDocument | null> => {
+  return User.findOne({ profileId }).exec()
+}
+
+export const User: Model<UserDocument> = model<UserDocument, UserModel>('User', UserSchema)

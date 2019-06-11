@@ -1,23 +1,6 @@
-import { Schema, Model, Document, model } from 'mongoose'
-
-export interface ISale {
-  name: string
-  description: string
-  price: string
-  status?: string
-  images?: string[]
-  userId: string
-  userName: string
-  userLink: string
-  clientId?: string
-  clientName?: string
-  clientLink?: string
-  selledDate?: Date
-  createdAt?: Date
-  updatedAt?: Date
-}
-
-export interface SaleDocument extends Document, ISale {}
+import { Schema, Model, model } from 'mongoose'
+import { ISale, SaleDocument, SaleModel, SaleStatus } from '../types/Sale'
+import Client from '../types/Client'
 
 const SaleSchema: Schema = new Schema({
   name: {
@@ -75,4 +58,53 @@ const SaleSchema: Schema = new Schema({
   }
 })
 
-export const Sale: Model<SaleDocument> = model<SaleDocument>('Sale', SaleSchema)
+SaleSchema.statics.craeteSale = (sale: ISale): Promise<SaleDocument> => {
+  return new Sale(sale).save()
+}
+
+SaleSchema.statics.findSaleById = (saleId: string): Promise<SaleDocument | null> => {
+  return Sale.findById(saleId).exec()
+}
+
+SaleSchema.statics.findSales = (skip: number, limit: number): Promise<SaleDocument[]> => {
+  return Sale.find().skip(skip).limit(limit).exec()
+}
+
+SaleSchema.statics.findOwnSales = (userId: string, skip: number, limit: number): Promise<SaleDocument[]> => {
+  return Sale.find({ userId }).skip(skip).limit(limit).exec()
+}
+
+SaleSchema.statics.findPurchases = (skip: number, limit: number): Promise<SaleDocument[]> => {
+  return Sale.find({ status: SaleStatus.beforeExchage }).skip(skip).limit(limit).exec()
+}
+
+SaleSchema.statics.findOwnPurchase = (clientId: string, skip: number, limit: number): Promise<SaleDocument[]> => {
+  return Sale.find({ clientId }).skip(skip).limit(limit).exec()
+}
+
+SaleSchema.statics.updateSale = (saleId: string, sale: ISale): Promise<number> => {
+  return Sale.updateOne({ _id: saleId }, sale).exec()
+}
+
+SaleSchema.statics.updateSaleClient = (saleId: string, status: SaleStatus, client: Client): Promise<number> => {
+  return Sale.updateOne({ _id: saleId }, {
+    $set: {
+      clientId: client.id,
+      clientName: client.name,
+      clientLink: client.link,
+      status
+    }
+  }).exec()
+}
+
+SaleSchema.statics.updateSaleStatus = (saleId: string, status: SaleStatus): Promise<number> => {
+  return Sale.updateOne({ _id: saleId }, {
+    $set: { status }
+  }).exec()
+}
+
+SaleSchema.statics.deleteSale = (saleId: string): Promise<{}> => {
+  return Sale.deleteOne({ _id: saleId }).exec()
+}
+
+export const Sale: Model<SaleDocument> = model<SaleDocument, SaleModel>('Sale', SaleSchema)

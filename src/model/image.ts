@@ -1,12 +1,5 @@
-import { Schema, Model, Document, model } from 'mongoose'
-
-export interface IImage {
-  extension: string
-  createdAt?: Date
-  updatedAt?: Date
-}
-
-export interface ImageDocument extends Document, IImage {}
+import { Schema, Model, model } from 'mongoose'
+import { IImage, ImageDocument, ImageModel } from '../types/Image'
 
 const ImageSchema: Schema = new Schema({
   extension: {
@@ -23,4 +16,12 @@ const ImageSchema: Schema = new Schema({
   }
 })
 
-export const Image: Model<ImageDocument> = model<ImageDocument>('Image', ImageSchema)
+ImageSchema.statics.createImage = (image: IImage): Promise<ImageDocument> => {
+  return new Image(image).save()
+}
+
+ImageSchema.statics.findImageById = (imageId: string): Promise<ImageDocument | null> => {
+  return Image.findById(imageId).exec()
+}
+
+export const Image: Model<ImageDocument> = model<ImageDocument, ImageModel>('Image', ImageSchema)
