@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
+import { User } from '../../model/user'
 import DB, { UserDocument } from '../../model/index'
 import mailer from '../../util/mailer'
 import * as redis from '../../util/redis'

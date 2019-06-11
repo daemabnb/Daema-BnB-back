@@ -107,4 +107,4 @@ SaleSchema.statics.deleteSale = (saleId: string): Promise<{}> => {
   return Sale.deleteOne({ _id: saleId }).exec()
 }
 
-export const Sale: Model<SaleDocument> = model<SaleDocument, SaleModel>('Sale', SaleSchema)
+export const Sale: SaleModel = model<SaleDocument, SaleModel>('Sale', SaleSchema)

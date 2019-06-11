@@ -127,4 +127,4 @@ ShareSchema.statics.deleteShare = (shareId: string): Promise<{}> => {
   return Share.deleteOne({ _id: shareId }).exec()
 }
 
-export const Share: Model<ShareDocument> = model<ShareDocument, ShareModel>('Share', ShareSchema)
+export const Share: ShareModel = model<ShareDocument, ShareModel>('Share', ShareSchema)

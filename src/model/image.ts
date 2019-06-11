@@ -24,4 +24,4 @@ ImageSchema.statics.findImageById = (imageId: string): Promise<ImageDocument | n
   return Image.findById(imageId).exec()
 }
 
-export const Image: Model<ImageDocument> = model<ImageDocument, ImageModel>('Image', ImageSchema)
+export const Image: ImageModel = model<ImageDocument, ImageModel>('Image', ImageSchema)

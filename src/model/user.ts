@@ -45,4 +45,4 @@ UserSchema.statics.findUserByProfileId = (profileId: string): Promise<UserDocume
   return User.findOne({ profileId }).exec()
 }
 
-export const User: Model<UserDocument> = model<UserDocument, UserModel>('User', UserSchema)
+export const User: UserModel = model<UserDocument, UserModel>('User', UserSchema)
