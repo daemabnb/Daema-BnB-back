@@ -3,13 +3,13 @@ import { Sale, ISale, SaleDocument } from './sale'
 import { Share, IShare, ShareDocument } from './share'
 import { Image, IImage, ImageDocument } from './image'
 
-enum SaleStatus {
+export enum SaleStatus {
   onSale = 'onSale',
   beforeExchage = 'beforeExchage',
   selled = 'selled'
 }
 
-enum ShareStatus {
+export enum ShareStatus {
   onShare = 'onShare',
   onRental = 'onRental',
   beforeExchage = 'beforeExchage',
@@ -23,7 +23,7 @@ interface Client {
   link: string
 }
 
-class DB {
+export default class DB {
   createUser(user: IUser): Promise<UserDocument> {
     return new User(user).save()
   }
@@ -145,5 +145,4 @@ class DB {
   }
 }
 
-export default DB
-export { UserDocument, SaleDocument, ShareDocument, ImageDocument, SaleStatus, ShareStatus }
+export { UserDocument, SaleDocument, ShareDocument, ImageDocument }

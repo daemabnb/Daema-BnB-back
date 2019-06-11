@@ -1,4 +1,4 @@
-class Err extends Error {
+export default class Err extends Error {
   status?: number
 
   constructor(message?: string, status?: number) {
@@ -6,5 +6,3 @@ class Err extends Error {
     this.status = status
   }
 }
-
-export default Err

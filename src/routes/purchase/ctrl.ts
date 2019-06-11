@@ -6,7 +6,7 @@ import DB, { SaleStatus } from '../../model/index'
 
 const db: DB = new DB()
 
-const verifyPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const verifyPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const itemId = req.params.id
 
   try {
@@ -24,7 +24,7 @@ const verifyPurchase: RequestHandler = async (req: Request, res: Response, next:
   }
 }
 
-const getPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { offset, limit } = req.query
 
   try {
@@ -50,7 +50,7 @@ const getPurchase: RequestHandler = async (req: Request, res: Response, next: Ne
   }
 }
 
-const getDetailPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getDetailPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { _id, name, description, price, status, images, userId, userName, userLink, clientId, clientName, clientLink }
     = req.sale
 
@@ -73,7 +73,7 @@ const getDetailPurchase: RequestHandler = async (req: Request, res: Response, ne
   }).end()
 }
 
-const postPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const postPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { _id, status } = req.sale
   const { id, displayName, profileUrl } = req.user
 
@@ -96,7 +96,7 @@ const postPurchase: RequestHandler = async (req: Request, res: Response, next: N
   }
 }
 
-const getPurchaseHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getPurchaseHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { offset, limit } = req.query
   const userId = req.user.id
 
@@ -120,7 +120,7 @@ const getPurchaseHistory: RequestHandler = async (req: Request, res: Response, n
   }
 }
 
-const getExchageAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getExchageAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const saleId = req.sale.id
   try {
     const authNum = await getSaleAuthNumber(saleId)
@@ -133,7 +133,7 @@ const getExchageAuthNum: RequestHandler = async (req: Request, res: Response, ne
   }
 }
 
-const postExchageAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const postExchageAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const saleId = req.sale.id
 
   try {
@@ -150,6 +150,3 @@ const postExchageAuthNum: RequestHandler = async (req: Request, res: Response, n
     next(e)
   }
 }
-
-export { verifyPurchase, getPurchase, getDetailPurchase, postPurchase, getPurchaseHistory,
-  getExchageAuthNum, postExchageAuthNum }

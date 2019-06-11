@@ -1,6 +1,6 @@
 import { Schema, Model, Document, model } from 'mongoose'
 
-interface IUser {
+export interface IUser {
   profileId: string,
   displayName: string,
   email: string,
@@ -10,7 +10,7 @@ interface IUser {
   updatedAt?: Date
 }
 
-interface UserDocument extends Document, IUser {}
+export interface UserDocument extends Document, IUser {}
 
 const UserSchema: Schema = new Schema({
   profileId: {
@@ -44,6 +44,4 @@ const UserSchema: Schema = new Schema({
   }
 })
 
-const User: Model<UserDocument> = model<UserDocument>('User', UserSchema)
-
-export { User, IUser, UserDocument }
+export const User: Model<UserDocument> = model<UserDocument>('User', UserSchema)

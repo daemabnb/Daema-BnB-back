@@ -7,7 +7,7 @@ import logger from '../../util/logger'
 
 const db: DB = new DB()
 
-const verifyRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const verifyRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const itemId = req.params.id
 
   try {
@@ -25,7 +25,7 @@ const verifyRental: RequestHandler = async (req: Request, res: Response, next: N
   }
 }
 
-const getRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { offset, limit } = req.query
 
   try {
@@ -54,7 +54,7 @@ const getRental: RequestHandler = async (req: Request, res: Response, next: Next
   }
 }
 
-const getDetailRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getDetailRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { _id, name, description, price, status, images, returnDate, sharedDate, period, isPublic,
     userId, userName, userLink, clientId, clientName, clientLink } = req.share
 
@@ -81,7 +81,7 @@ const getDetailRental: RequestHandler = async (req: Request, res: Response, next
   }).end()
 }
 
-const postRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const postRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { _id, status } = req.share
   const { id, displayName, profileUrl } = req.user
 
@@ -104,7 +104,7 @@ const postRental: RequestHandler = async (req: Request, res: Response, next: Nex
   }
 }
 
-const getRentalHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getRentalHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { offset, limit } = req.query
   const userId = req.user.id
 
@@ -134,7 +134,7 @@ const getRentalHistory: RequestHandler = async (req: Request, res: Response, nex
   }
 }
 
-const getExchangeAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getExchangeAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const shareId = req.share.id
 
   try {
@@ -148,7 +148,7 @@ const getExchangeAuthNum: RequestHandler = async (req: Request, res: Response, n
   }
 }
 
-const postExchangeAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const postExchangeAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const shareId = req.share.id
 
   try {
@@ -166,7 +166,7 @@ const postExchangeAuthNum: RequestHandler = async (req: Request, res: Response, 
   }
 }
 
-const getReturnAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getReturnAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const shareId = req.share.id
 
   try {
@@ -180,7 +180,7 @@ const getReturnAuthNum: RequestHandler = async (req: Request, res: Response, nex
   }
 }
 
-const postReturnAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const postReturnAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { id, name, description, price, returnDate, period, isPublic, userId, userName, userLink } = req.share
 
   try {
@@ -210,7 +210,7 @@ const postReturnAuthNum: RequestHandler = async (req: Request, res: Response, ne
   }
 }
 
-const updateShareStatusByTime = async () => {
+export const updateShareStatusByTime = async () => {
   const now = Date.now()
 
   try {
@@ -219,6 +219,3 @@ const updateShareStatusByTime = async () => {
     logger.error(e.stack)
   }
 }
-
-export { verifyRental, getRental, getDetailRental, postRental, getRentalHistory,
-  getExchangeAuthNum, postExchangeAuthNum, getReturnAuthNum, postReturnAuthNum, updateShareStatusByTime }

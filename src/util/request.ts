@@ -1,4 +1,4 @@
-const getRequest = async (uri: string): Promise<Response> => {
+export const getRequest = async (uri: string): Promise<Response> => {
   try {
     const init: RequestInit = {
       method: 'GET'
@@ -9,5 +9,3 @@ const getRequest = async (uri: string): Promise<Response> => {
     throw new Error(error)
   }
 }
-
-export { getRequest }

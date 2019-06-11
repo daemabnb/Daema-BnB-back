@@ -8,7 +8,7 @@ interface SignedUrlParams {
   Expires: number
 }
 
-enum ImageType {
+export enum ImageType {
   Sale = 'sale',
   Share = 'share'
 }
@@ -32,18 +32,16 @@ const getParams = (key: string, bucket: string = bucketName, expires: number = 6
   }
 }
 
-const getUploadUrl = (imageType: ImageType, id: Types.ObjectId, images: string[]): string[] => {
+export const getUploadUrl = (imageType: ImageType, id: Types.ObjectId, images: string[]): string[] => {
   return images.map(image => {
     const filePath = `${imageType}/${id}/${image}`
     return s3.getSignedUrl('putObject', getParams(filePath))
   })
 }
 
-const getDownloadUrl = (imageType: ImageType, id: Types.ObjectId, images: string[]): string[] => {
+export const getDownloadUrl = (imageType: ImageType, id: Types.ObjectId, images: string[]): string[] => {
   return images.map(image => {
     const filePath = `${imageType}/${id}/${image}`
     return s3.getSignedUrl('getObject', getParams(filePath))
   })
 }
-
-export { getUploadUrl, getDownloadUrl, ImageType }

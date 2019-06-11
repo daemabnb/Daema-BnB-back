@@ -3,7 +3,7 @@ import DB from '../model/index'
 
 const db: DB = new DB()
 
-const getImageNames = (images: string[]): Promise<string[]> => {
+export const getImageNames = (images: string[]): Promise<string[]> => {
   return Promise.all(images.map(async (image) => {
     if (image.includes('.')) {
       const imageName = await saveImage([image])
@@ -20,7 +20,7 @@ const getImageNames = (images: string[]): Promise<string[]> => {
   }))
 }
 
-const getImageLinks = (images: string[], changedImages: string[]): string[] => {
+export const getImageLinks = (images: string[], changedImages: string[]): string[] => {
   return images.map((image, index) => {
     if (image.includes('.')) {
       return index
@@ -29,7 +29,7 @@ const getImageLinks = (images: string[], changedImages: string[]): string[] => {
   }).filter(v => v !== 0 ? true : false).map(index => changedImages[index])
 }
 
-const saveImage = (images: string[]): Promise<string[]> => {
+export const saveImage = (images: string[]): Promise<string[]> => {
   return Promise.all(images.map(image => {
     const lastDot = image.lastIndexOf('.')
 
@@ -43,5 +43,3 @@ const saveImage = (images: string[]): Promise<string[]> => {
     return (image._id).concat(extension)
   }))
 }
-
-export { saveImage, getImageNames, getImageLinks}

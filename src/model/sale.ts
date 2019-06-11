@@ -1,6 +1,6 @@
 import { Schema, Model, Document, model } from 'mongoose'
 
-interface ISale {
+export interface ISale {
   name: string
   description: string
   price: string
@@ -17,7 +17,7 @@ interface ISale {
   updatedAt?: Date
 }
 
-interface SaleDocument extends Document, ISale {}
+export interface SaleDocument extends Document, ISale {}
 
 const SaleSchema: Schema = new Schema({
   name: {
@@ -75,6 +75,4 @@ const SaleSchema: Schema = new Schema({
   }
 })
 
-const Sale: Model<SaleDocument> = model<SaleDocument>('Sale', SaleSchema)
-
-export { Sale, ISale, SaleDocument }
+export const Sale: Model<SaleDocument> = model<SaleDocument>('Sale', SaleSchema)

@@ -7,7 +7,7 @@ import { createToken } from '../../util/jwt'
 
 const db: DB = new DB()
 
-const postAuthemail: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const postAuthemail: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { email } = req.body
 
   try {
@@ -21,7 +21,7 @@ const postAuthemail: RequestHandler = async (req: Request, res: Response, next: 
   }
 }
 
-const getSigninFacebook: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+export const getSigninFacebook: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { accessToken } = req.body
     const uri = `https://graph.facebook.com/me?fields=id,name,link&access_token=${accessToken}`
@@ -51,7 +51,7 @@ const getSigninFacebook: RequestHandler = async (req: Request, res: Response, ne
   }
 }
 
-const postSignup: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+export const postSignup: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
   const { email, authNum } = req.body
 
   try {
@@ -78,5 +78,3 @@ const postSignup: RequestHandler = async (req: Request, res: Response, next: Nex
     next(e)
   }
 }
-
-export { postAuthemail, getSigninFacebook, postSignup }

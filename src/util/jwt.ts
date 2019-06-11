@@ -6,7 +6,7 @@ const jwtOptions: jwt.SignOptions = {
   expiresIn: '7d'
 }
 
-const createToken = (id: string, displayName: string, profileUrl: string, email?: string): string => {
+export const createToken = (id: string, displayName: string, profileUrl: string, email?: string): string => {
   const payload = {
     id,
     displayName,
@@ -19,7 +19,7 @@ const createToken = (id: string, displayName: string, profileUrl: string, email?
   return token
 }
 
-const verifyToken: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
+export const verifyToken: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers['token'] as string
 
   try {
@@ -37,7 +37,7 @@ const verifyToken: RequestHandler = (req: Request, res: Response, next: NextFunc
   }
 }
 
-const verifyTokenWithoutEmail: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
+export const verifyTokenWithoutEmail: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers['token'] as string
 
   try {
@@ -49,5 +49,3 @@ const verifyTokenWithoutEmail: RequestHandler = (req: Request, res: Response, ne
     res.status(403).end()
   }
 }
-
-export { createToken, verifyToken, verifyTokenWithoutEmail }

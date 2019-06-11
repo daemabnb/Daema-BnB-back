@@ -7,7 +7,7 @@ import DB, { ShareStatus } from '../../model/index'
 
 const db: DB = new DB()
 
-const verifyShare: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const verifyShare: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const itemId = req.params.id
 
   try {
@@ -25,7 +25,7 @@ const verifyShare: RequestHandler = async (req: Request, res: Response, next: Ne
   }
 }
 
-const postShare: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const postShare: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { itemName, itemDescription, itemPrice, returnDate, period, isPublic, images } = req.body
   const { id, displayName, profileUrl } = req.user
 
@@ -53,7 +53,7 @@ const postShare: RequestHandler = async (req: Request, res: Response, next: Next
   }
 }
 
-const getDetailShare: RequestHandler = (req: Request, res: Response, next: NextFunction): void => {
+export const getDetailShare: RequestHandler = (req: Request, res: Response, next: NextFunction): void => {
   const { _id, name, description, price, status, returnDate, sharedDate, period, isPublic, images,
     userId, userName, userLink, clientId, clientName, clientLink } = req.share
 
@@ -80,7 +80,7 @@ const getDetailShare: RequestHandler = (req: Request, res: Response, next: NextF
   }).end()
 }
 
-const putShare: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const putShare: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const itemId = req.params.id
   const { itemName, itemDescription, itemPrice, deadline, period, isPublic, images } = req.body
   const shareStatus = req.share.status as string
@@ -115,7 +115,7 @@ const putShare: RequestHandler = async (req: Request, res: Response, next: NextF
   }
 }
 
-const deleteShare: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const deleteShare: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const itemId = req.params.id
   const shareStatus = req.share.status
 
@@ -132,7 +132,7 @@ const deleteShare: RequestHandler = async (req: Request, res: Response, next: Ne
   }
 }
 
-const getShareHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getShareHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { offset, limit } = req.query
   const userId = req.user.id
 
@@ -159,5 +159,3 @@ const getShareHistory: RequestHandler = async (req: Request, res: Response, next
     next(e)
   }
 }
-
-export { verifyShare, postShare, getDetailShare, putShare, deleteShare, getShareHistory }

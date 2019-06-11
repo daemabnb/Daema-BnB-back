@@ -1,12 +1,12 @@
 import { Schema, Model, Document, model } from 'mongoose'
 
-interface IImage {
+export interface IImage {
   extension: string
   createdAt?: Date
   updatedAt?: Date
 }
 
-interface ImageDocument extends Document, IImage {}
+export interface ImageDocument extends Document, IImage {}
 
 const ImageSchema: Schema = new Schema({
   extension: {
@@ -23,6 +23,4 @@ const ImageSchema: Schema = new Schema({
   }
 })
 
-const Image: Model<ImageDocument> = model<ImageDocument>('Image', ImageSchema)
-
-export { Image, IImage, ImageDocument }
+export const Image: Model<ImageDocument> = model<ImageDocument>('Image', ImageSchema)

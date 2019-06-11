@@ -4,7 +4,7 @@ import { slackUrl } from '../config'
 const slack = new Slack()
 slack.setWebhook(slackUrl)
 
-const sendMessageToSlack = (err: string) => {
+export default (err: string) => {
   slack.webhook({
     channel: '#log',
     username: '에러가 왔어요',
@@ -16,5 +16,3 @@ const sendMessageToSlack = (err: string) => {
     }
   })
 }
-
-export default sendMessageToSlack

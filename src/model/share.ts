@@ -1,6 +1,6 @@
 import { Schema, Model, Document, model } from 'mongoose'
 
-interface IShare {
+export interface IShare {
   name: string
   description: string
   price: string
@@ -20,7 +20,7 @@ interface IShare {
   updatedAt?: Date
 }
 
-interface ShareDocument extends Document, IShare {}
+export interface ShareDocument extends Document, IShare {}
 
 const ShareSchema: Schema = new Schema({
   name: {
@@ -92,6 +92,4 @@ const ShareSchema: Schema = new Schema({
   }
 })
 
-const Share: Model<ShareDocument> = model<ShareDocument>('Share', ShareSchema)
-
-export { Share, IShare, ShareDocument }
+export const Share: Model<ShareDocument> = model<ShareDocument>('Share', ShareSchema)
