@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
-import DB from '../../model/index'
+import DB, { UserDocument } from '../../model/index'
 import mailer from '../../util/mailer'
 import * as redis from '../../util/redis'
 import { getRequest } from '../../util/request'
@@ -22,7 +22,33 @@ const postAuthemail: RequestHandler = async (req: Request, res: Response, next: 
 }
 
 const getSigninFacebook: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { accessToken } = req.body
+    const uri = `https://graph.facebook.com/me?fields=id,name,link&access_token=${accessToken}`
 
+    const response = await getRequest(uri)
+    const responseBody = await response.json()
+    const { id, name, profileUrl } = responseBody
+
+    const user = await db.findUserById(id) as UserDocument
+
+    if (user) {
+      const token = createToken(user.profileId, user.displayName, user.profileId, user.email)
+
+      res.status(200).json({
+        token,
+        isAdmin: user.isAdmin
+      }).end()
+
+      return
+    }
+
+    const token = createToken(id, name, profileUrl)
+
+    res.status(201).json({ token }).end()
+  } catch (error) {
+    next(error)
+  }
 }
 
 const postSignup: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
