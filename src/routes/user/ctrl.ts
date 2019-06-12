@@ -1,17 +1,17 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { User } from '../../model/user'
-import { UserDocument } from '../../types/User'
+import * as userType from '../../types/ctrl/user'
 import mailer from '../../util/mailer'
 import * as redis from '../../util/redis'
 import { getRequest } from '../../util/request'
 import { createToken } from '../../util/jwt'
 
 export const postAuthemail: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { email } = req.body
-
   try {
-    const authNum = await mailer(email)
+    const body: userType.PostAuthemailBody = req.body
+    const { email } = body
 
+    const authNum = await mailer(email)
     await redis.addAuthWaitingList(email, authNum)
 
     res.status(201).end()
@@ -22,38 +22,39 @@ export const postAuthemail: RequestHandler = async (req: Request, res: Response,
 
 export const getSigninFacebook: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { accessToken } = req.body
+    const body: userType.GetSigninFacebookBody = req.body
+    const { accessToken } = body
+
     const uri = `https://graph.facebook.com/me?fields=id,name,link&access_token=${accessToken}`
+    const facebookRes = await getRequest(uri)
+    const facebookResBody = await facebookRes.json()
+    const { id, name, profileUrl } = facebookResBody
 
-    const response = await getRequest(uri)
-    const responseBody = await response.json()
-    const { id, name, profileUrl } = responseBody
+    const user = await User.findUserById(id)
 
-    const user = await User.findUserById(id) as UserDocument
+    const token = user ? createToken(user.profileId, user.displayName, user.profileId, user.email) :
+      createToken(id, name, profileUrl)
+    const response: userType.GetSigninFacebookRes = {
+      token,
+      isAdmin: user ? user.isAdmin : undefined
+    }
 
     if (user) {
-      const token = createToken(user.profileId, user.displayName, user.profileId, user.email)
-
-      res.status(200).json({
-        token,
-        isAdmin: user.isAdmin
-      }).end()
-
+      res.status(200).json(response).end()
       return
     }
 
-    const token = createToken(id, name, profileUrl)
-
-    res.status(201).json({ token }).end()
+    res.status(201).json(response).end()
   } catch (error) {
     next(error)
   }
 }
 
 export const postSignup: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, authNum } = req.body
-
   try {
+    const body: userType.PostSignupReq = req.body
+    const { email, authNum } = body
+
     const savedAuthNum = await redis.getSaleAuthNumber(email)
 
     if (authNum !== savedAuthNum) {
@@ -72,7 +73,8 @@ export const postSignup: RequestHandler = async (req: Request, res: Response, ne
 
     const token = createToken(id, displayName, profileUrl, email)
 
-    res.status(201).json({ token }).end()
+    const response: userType.PostSignupRes = { token }
+    res.status(201).json(response).end()
   } catch (e) {
     next(e)
   }
