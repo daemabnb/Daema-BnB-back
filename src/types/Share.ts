@@ -13,9 +13,9 @@ export interface IShare {
   name: string
   description: string
   price: string
-  returnDate: Number
+  returnDate: number
   period: number
-  sharedDate?: Number
+  sharedDate?: number
   isPublic: boolean
   status?: string
   images?: string[]
