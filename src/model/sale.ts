@@ -58,7 +58,7 @@ const SaleSchema: Schema = new Schema({
   }
 })
 
-SaleSchema.statics.craeteSale = (sale: ISale): Promise<SaleDocument> => {
+SaleSchema.statics.createSale = (sale: ISale): Promise<SaleDocument> => {
   return new Sale(sale).save()
 }
 
