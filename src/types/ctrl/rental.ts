@@ -1,67 +1,65 @@
-export interface VerifyRentalReq {
-
+export interface VerifyRentalParams {
+  id: string
 }
 
-export interface VerifyRentalRes {
-  
-}
-
-export interface GetRentalReq {
-  
+export interface GetRentalQuery {
+  offset: string
+  limit: string
 }
 
 export interface GetRentalRes {
-  
-}
-
-export interface GetDetailRentalReq {
-  
+  itemId: string
+  itemName: string
+  itemPrice: string
+  itemImages: string[]
+  isFree: boolean
+  deadline: number
+  period: number
+  isPublic: boolean
 }
 
 export interface GetDetailRentalRes {
-  
+  itemId: string
+  itemName: string
+  itemDescription: string
+  itemPrice: string
+  saleStatus?: string
+  itemImages: string[]
+  isFree: boolean
+  isPublic: boolean
+  sharedDate?: number
+  deadline: number
+  period: number
+  ownerId: string
+  ownerName: string
+  ownerLink: string
+  clientId?: string
+  clientName?: string
+  clientLink?: string
 }
 
-export interface PostRentalReq {
-  
+export interface GetRentalHistoryQuery {
+  offset: string
+  limit: string
 }
 
-export interface PostRentalRes {
-  
-}
-
-export interface GetRentalHistoryReq {
-  
-}
-
-export interface GetExchangeAuthNumReq {
-  
+export interface GetRentalHistoryRes {
+  itemId: string
+  itemName: string
+  itemDescription: string
+  shareStatus?: string
+  registerDate?: Date
+  sharedDate?: number
+  deadline: number
+  period: number
+  isPublic: boolean
+  ownerName: string
 }
 
 export interface GetExchangeAuthNumRes {
-  
-}
-
-export interface PostExchangeAuthNumReq {
-  
-}
-
-export interface PostExchangeAuthNumRes {
-  
-}
-
-export interface GetReturnAuthNumReq {
-  
+  authPassword: string
 }
 
 export interface GetReturnAuthNumRes {
-  
-}
-
-export interface PostReturnAuthNumReq {
-  
-}
-
-export interface PostReturnAuthNumRes {
-  
+  authPassword: string
 }
