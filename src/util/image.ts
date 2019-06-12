@@ -1,7 +1,5 @@
 import Err from './error'
-import DB from '../model/index'
-
-const db: DB = new DB()
+import { Image } from '../model/image'
 
 export const getImageNames = (images: string[]): Promise<string[]> => {
   return Promise.all(images.map(async (image) => {
@@ -10,7 +8,7 @@ export const getImageNames = (images: string[]): Promise<string[]> => {
       return imageName[0]
     }
 
-    const oldImage = await db.findImageById(image)
+    const oldImage = await Image.findImageById(image)
 
     if (oldImage === null) {
       throw new Err('없는 이미지. 저리 가!', 405)
@@ -39,7 +37,7 @@ export const saveImage = (images: string[]): Promise<string[]> => {
 
     return image.substring(lastDot, image.length)
   }).map(async (extension) => {
-    const image = await db.createImage({ extension })
+    const image = await Image.createImage({ extension })
     return (image._id).concat(extension)
   }))
 }
