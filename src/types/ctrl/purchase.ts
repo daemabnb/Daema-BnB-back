@@ -1,55 +1,50 @@
-export interface VerifyPurchaseReq {
-
+export interface VerifyPurchaseParams {
+  id: string
 }
 
-export interface VerifyPurchaseRes {
-
-}
-
-export interface GetPurchaseReq {
-
+export interface GetPurchaseQuery {
+  offset: string
+  limit: string
 }
 
 export interface GetPurchaseRes {
-
-}
-
-export interface GetDetailPurchaseReq {
-
+  itemId: string
+  itemName: string
+  itemPrice: string
+  itemImages: string[]
+  isFree: boolean
 }
 
 export interface GetDetailPurchaseRes {
-
+  itemId: string
+  itemName: string
+  itemDescription: string
+  itemPrice: string
+  saleStatus?: string
+  itemImages: string[]
+  isFree: boolean
+  ownerId: string
+  ownerName: string
+  ownerLink: string
+  clientId?: string
+  clientName?: string
+  clientLink?: string
 }
 
-export interface PostPurchaseReq {
-
-}
-
-export interface PostPurchaseRes {
-
-}
-
-export interface GetPurchaseHistoryReq {
-
+export interface GetPurchaseHistoryQuery {
+  offset: string
+  limit: string
 }
 
 export interface GetPurchaseHistoryRes {
-
-}
-
-export interface GetExchageAuthNumReq {
-
+  itemId: string
+  itemName: string
+  itemDescription: string
+  saleStatus?: string
+  registerDate?: Date
+  purchaseDate?: Date
 }
 
 export interface GetExchageAuthNumRes {
-
-}
-
-export interface PostExchageAuthNumReq {
-
-}
-
-export interface PostExchageAuthNumRes {
-
+  authPassword: string
 }

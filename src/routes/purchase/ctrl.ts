@@ -1,14 +1,16 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { Sale } from '../../model/sale'
 import { SaleStatus } from '../../types/Sale'
+import * as purchaseType from '../../types/ctrl/purchase'
 import { getDownloadUrl, ImageType } from '../../util/aws'
 import { setSaleAuthNumber, getSaleAuthNumber } from '../../util/redis'
 import Err from '../../util/error'
 
 export const verifyPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const itemId = req.params.id
-
   try {
+    const params: purchaseType.VerifyPurchaseParams = req.params
+    const itemId = params.id
+
     const sale = await Sale.findSaleById(itemId)
 
     if (sale === null) {
@@ -24,12 +26,13 @@ export const verifyPurchase: RequestHandler = async (req: Request, res: Response
 }
 
 export const getPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { offset, limit } = req.query
-
   try {
+    const query: purchaseType.GetPurchaseQuery = req.query
+    const { offset, limit } = query
+
     const sales = await Sale.findPurchases(parseInt(offset, 10), parseInt(limit, 10))
 
-    const responseSales = sales.map(sale => {
+    const response: purchaseType.GetPurchaseRes[] = sales.map(sale => {
       const { _id, name, price } = sale
       const images = sale.images as string[]
       const image = getDownloadUrl(ImageType.Sale, _id, [images[0]])
@@ -43,40 +46,45 @@ export const getPurchase: RequestHandler = async (req: Request, res: Response, n
       }
     })
 
-    res.status(200).json(responseSales).end()
+    res.status(200).json(response).end()
   } catch (e) {
     next(e)
   }
 }
 
 export const getDetailPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { _id, name, description, price, status, images, userId, userName, userLink, clientId, clientName, clientLink }
+  try {
+    const { _id, name, description, price, status, images, userId, userName, userLink, clientId, clientName, clientLink }
     = req.sale
 
-  const downloadUrls: string[] = getDownloadUrl(ImageType.Sale,_id, images as string[])
+    const downloadUrls: string[] = getDownloadUrl(ImageType.Sale,_id, images as string[])
 
-  res.status(200).json({
-    itemId: _id,
-    itemName: name,
-    itemDescription: description,
-    itemPrice: price,
-    saleStatus: status,
-    itemImages: downloadUrls,
-    isFree: price === '0' ? true : false,
-    ownerId: userId,
-    ownerName: userName,
-    ownerLink: userLink,
-    clientId,
-    clientName,
-    clientLink
-  }).end()
+    const response: purchaseType.GetDetailPurchaseRes = {
+      itemId: _id,
+      itemName: name,
+      itemDescription: description,
+      itemPrice: price,
+      saleStatus: status,
+      itemImages: downloadUrls,
+      isFree: price === '0' ? true : false,
+      ownerId: userId,
+      ownerName: userName,
+      ownerLink: userLink,
+      clientId,
+      clientName,
+      clientLink
+    }
+    res.status(200).json(response).end()
+  } catch (error) {
+    next(error)
+  }
 }
 
 export const postPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { _id, status } = req.sale
-  const { id, displayName, profileUrl } = req.user
-
   try {
+    const { _id, status } = req.sale
+    const { id, displayName, profileUrl } = req.user
+
     if (status !== SaleStatus.onSale) {
       throw new Err('안 팔아. 저리 가!', 405)
     }
@@ -96,46 +104,50 @@ export const postPurchase: RequestHandler = async (req: Request, res: Response, 
 }
 
 export const getPurchaseHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { offset, limit } = req.query
-  const userId = req.user.id
-
   try {
-    const purchases = await Sale.findOwnPurchase(userId, offset, limit)
+    const query: purchaseType.GetPurchaseHistoryQuery = req.query
+    const { offset, limit } = query
+    const userId = req.user.id
 
-    const responsePurchases = purchases.map(purchase => {
-      return {
-        itemId: purchase._id,
-        itemName: purchase.name,
-        itemDescription: purchase.description,
-        saleStatus: purchase.status,
-        registerDate: purchase.createdAt,
-        purchaseDate: purchase.selledDate
-      }
-    })
+    const purchases = await Sale.findOwnPurchase(userId, parseInt(offset, 10), parseInt(limit, 10))
 
-    res.status(200).json(responsePurchases).end()
+    const response: purchaseType.GetPurchaseHistoryRes[] = purchases.map(purchase => ({
+      itemId: purchase._id,
+      itemName: purchase.name,
+      itemDescription: purchase.description,
+      saleStatus: purchase.status,
+      registerDate: purchase.createdAt,
+      purchaseDate: purchase.selledDate
+    }))
+
+    res.status(200).json(response).end()
   } catch (e) {
     next(e)
   }
 }
 
 export const getExchageAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const saleId = req.sale.id
   try {
+    const saleId = req.sale.id
     const authNum = await getSaleAuthNumber(saleId)
 
-    res.status(200).json({
+    if (authNum === null) {
+      throw new Err('얘는 인증번호가 없어. 저리 가!', 405)
+    }
+
+    const response: purchaseType.GetExchageAuthNumRes = {
       authPassword: authNum
-    }).end()
+    }
+    res.status(200).json(response).end()
   } catch (e) {
     next(e)
   }
 }
 
 export const postExchageAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const saleId = req.sale.id
-
   try {
+    const saleId = req.sale.id
+
     const authNum = await getSaleAuthNumber(saleId)
 
     if (authNum === null || authNum !== req.body.authPassword) {

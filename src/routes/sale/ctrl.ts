@@ -92,7 +92,7 @@ export const putSale: RequestHandler = async (req: Request, res: Response, next:
     const { itemName, itemDescription, itemPrice, images } = body
     const saleStatus = req.sale.status as string
     const { id, displayName, profileUrl } = req.user
-  
+
     if (saleStatus === SaleStatus.beforeExchage) {
       throw new Err('동작 그만 밑장 빼기냐. 어디서 수정을 시도해?', 405)
     }
