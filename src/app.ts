@@ -3,13 +3,13 @@ import * as express from 'express'
 import * as cors from 'cors'
 import * as helmet from 'helmet'
 import { mongoUri } from './config'
+import { SaleDocument } from './types/Sale'
+import { ShareDocument } from './types/Share'
 import logger from './util/logger'
 import slack from './util/slack'
 import router from './routes/index'
 import { updateShareStatusByTime } from './routes/rental/ctrl'
-import passport from './util/passport'
 import Err from './util/error'
-import { SaleDocument, ShareDocument } from './model/index'
 import cron from './util/cron'
 
 const mongooseOptions: mongoose.ConnectionOptions = {
@@ -33,7 +33,6 @@ app.use(cors())
   .use(helmet())
   .use(express.json())
   .use(express.urlencoded({ extended: false }))
-  .use(passport.initialize())
   .use(router)
   .use((req: express.Request, res: express.Response) => res.status(404).end())
   .use((err: Err, req: express.Request, res: express.Response, next: express.NextFunction) => {

@@ -1,9 +1,9 @@
 import * as request from 'supertest'
 import * as sinon from 'sinon'
 import app from '../src/app'
+import { Sale } from '../src/model/sale'
 import { createToken } from '../src/util/jwt'
 import * as redis from '../src/util/redis'
-import DB from '../src/model/index'
 
 describe('purchase test', () => {
   let req: request.SuperTest<request.Test>
@@ -16,7 +16,7 @@ describe('purchase test', () => {
 
     sandbox = sinon.createSandbox()
 
-    sandbox.stub(DB.prototype, 'findPurchases').value(() => {
+    sandbox.stub(Sale, 'findPurchases').value(() => {
       return new Promise(resolve => {
         resolve(
           [{
@@ -29,7 +29,7 @@ describe('purchase test', () => {
       })
     })
 
-    sandbox.stub(DB.prototype, 'findSaleById').value(() => {
+    sandbox.stub(Sale, 'findSaleById').value(() => {
       return new Promise(resolve => {
         resolve({
           _id: 'abcdefghijkl',
@@ -45,13 +45,13 @@ describe('purchase test', () => {
       })
     })
 
-    sandbox.stub(DB.prototype, 'updateSaleClient').value(() => {
+    sandbox.stub(Sale, 'updateSaleClient').value(() => {
       return new Promise(resolve => {
         resolve()
       })
     })
 
-    sandbox.stub(DB.prototype, 'findOwnPurchase').value(() => {
+    sandbox.stub(Sale, 'findOwnPurchase').value(() => {
       return new Promise(resolve => {
         resolve([{
           _id: 'abcdefghijkl',
@@ -64,7 +64,7 @@ describe('purchase test', () => {
       })
     })
 
-    sandbox.stub(DB.prototype, 'updateSaleStatus').value(() => {
+    sandbox.stub(Sale, 'updateSaleStatus').value(() => {
       return new Promise(resolve => {
         resolve()
       })

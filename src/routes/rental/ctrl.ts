@@ -1,17 +1,18 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
+import { Share } from '../../model/share'
+import { ShareStatus } from '../../types/Share'
+import * as rentalType from '../../types/ctrl/rental'
 import { getDownloadUrl, ImageType } from '../../util/aws'
-import DB, { ShareStatus } from '../../model/index'
-import { setShareAuthNumber, getShareAuthNumber, setReturnAuthNumber, getReturnAuthNumber } from '../../util/redis'
+import { setShareAuthNumber, getShareAuthNumber, getReturnAuthNumber } from '../../util/redis'
 import Err from '../../util/error'
-import logger from '../../util/logger';
+import logger from '../../util/logger'
 
-const db: DB = new DB()
-
-const verifyRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const itemId = req.params.id
-
+export const verifyRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const share = await db.findShareById(itemId)
+    const params: rentalType.VerifyRentalParams = req.params
+    const itemId = params.id
+
+    const share = await Share.findShareById(itemId)
 
     if (share === null) {
       throw new Err('존재하지 않는 sale id. 저리 가!', 405)
@@ -25,13 +26,14 @@ const verifyRental: RequestHandler = async (req: Request, res: Response, next: N
   }
 }
 
-const getRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { offset, limit } = req.query
-
+export const getRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const shares = await db.findRentals(parseInt(offset, 10), parseInt(limit, 10))
+    const query: rentalType.GetRentalQuery = req.query
+    const { offset, limit } = query
 
-    const responseSales = shares.map(share => {
+    const shares = await Share.findRentals(parseInt(offset, 10), parseInt(limit, 10))
+
+    const response: rentalType.GetRentalRes[] = shares.map(share => {
       const { _id, name, price, returnDate, period, isPublic } = share
       const images = share.images as string[]
       const image = getDownloadUrl(ImageType.Share, _id, [images[0]])
@@ -40,57 +42,62 @@ const getRental: RequestHandler = async (req: Request, res: Response, next: Next
         itemId: _id,
         itemName: name,
         itemPrice: price,
-        itemImage: image,
+        itemImages: image,
         isFree: price === '0' ? true : false,
-        returnDate,
+        deadline: returnDate,
         period,
         isPublic
       }
     })
 
-    res.status(200).json(responseSales).end()
+    res.status(200).json(response).end()
   } catch (e) {
     next(e)
   }
 }
 
-const getDetailRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { _id, name, description, price, status, images, returnDate, sharedDate, period, isPublic,
-    userId, userName, userLink, clientId, clientName, clientLink } = req.share
+export const getDetailRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { _id, name, description, price, status, images, returnDate, sharedDate, period, isPublic,
+      userId, userName, userLink, clientId, clientName, clientLink } = req.share
 
-  const downloadUrls: string[] = getDownloadUrl(ImageType.Share,_id, images as string[])
+    const downloadUrls: string[] = getDownloadUrl(ImageType.Share,_id, images as string[])
 
-  res.status(200).json({
-    itemId: _id,
-    itemName: name,
-    itemDescription: description,
-    itemPrice: price,
-    saleStatus: status,
-    itemImages: downloadUrls,
-    isFree: price === '0' ? true : false,
-    isPublic,
-    sharedDate,
-    returnDate,
-    period,
-    ownerId: userId,
-    ownerName: userName,
-    ownerLink: userLink,
-    clientId,
-    clientName,
-    clientLink
-  }).end()
+    const response: rentalType.GetDetailRentalRes = {
+      itemId: _id,
+      itemName: name,
+      itemDescription: description,
+      itemPrice: price,
+      saleStatus: status,
+      itemImages: downloadUrls,
+      isFree: price === '0' ? true : false,
+      isPublic,
+      sharedDate,
+      deadline: returnDate,
+      period,
+      ownerId: userId,
+      ownerName: userName,
+      ownerLink: userLink,
+      clientId,
+      clientName,
+      clientLink
+    }
+    res.status(200).json(response).end()
+  } catch (error) {
+    next(error)
+  }
 }
 
-const postRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { _id, status } = req.share
-  const { id, displayName, profileUrl } = req.user
-
+export const postRental: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const { _id, status } = req.share
+    const { id, displayName, profileUrl } = req.user
+
     if (status !== ShareStatus.onShare) {
       throw new Err('안 팔아. 저리 가!', 405)
     }
 
-    await db.updateShareClient(_id, ShareStatus.beforeExchage, {
+    await Share.updateShareClient(_id, ShareStatus.beforeExchage, {
       id,
       name: displayName,
       link: profileUrl
@@ -104,59 +111,67 @@ const postRental: RequestHandler = async (req: Request, res: Response, next: Nex
   }
 }
 
-const getRentalHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { offset, limit } = req.query
-  const userId = req.user.id
-
+export const getRentalHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const rentals = await db.findOwnRental(userId, offset, limit)
+    const query: rentalType.GetRentalHistoryQuery = req.query
+    const { offset, limit } = query
+    const userId = req.user.id
 
-    const responseRentals = rentals.map(rental => {
+    const rentals = await Share.findOwnRental(userId, parseInt(offset, 10), parseInt(limit, 10))
+
+    const response: rentalType.GetRentalHistoryRes[] = rentals.map(rental => {
+      const { _id, name, description, status, createdAt, sharedDate, returnDate, period, isPublic, userName } = rental
+
       return {
-        itemId: rental._id,
-        itemName: rental.name,
-        itemDescription: rental.description,
-        shareStatus: rental.status,
-        registerDate: rental.createdAt,
-        sharedDate: rental.sharedDate,
-        returnDate: rental.returnDate,
-        period: rental.period,
-        isPublic: rental.isPublic,
-        ownerName: rental.userName
+        itemId: _id,
+        itemName: name,
+        itemDescription: description,
+        shareStatus: status,
+        registerDate: createdAt,
+        sharedDate: sharedDate,
+        deadline: returnDate,
+        period: period,
+        isPublic: isPublic,
+        ownerName: userName
       }
     })
 
-    res.status(200).json(responseRentals).end()
+    res.status(200).json(response).end()
   } catch (e) {
     next(e)
   }
 }
 
-const getExchangeAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const shareId = req.share.id
-
+export const getExchangeAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const shareId = req.share.id
+
     const authNum = await getShareAuthNumber(shareId)
 
-    res.status(200).json({
+    if (authNum === null) {
+      throw new Err('여기 비밀번호 없어. 저리 가!', 405)
+    }
+
+    const response: rentalType.GetExchangeAuthNumRes = {
       authPassword: authNum
-    }).end()
+    }
+    res.status(200).json(response).end()
   } catch (e) {
     next(e)
   }
 }
 
-const postExchangeAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const shareId = req.share.id
-
+export const postExchangeAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const shareId = req.share.id
+
     const authNum = await getShareAuthNumber(shareId)
 
     if (authNum === null || authNum !== req.body.authPassword) {
       throw new Err('그런 번호 없어. 저리 가!', 405)
     }
 
-    await db.updateShareStatus(shareId, ShareStatus.onRental)
+    await Share.updateShareStatus(shareId, ShareStatus.onRental)
 
     res.status(201).end()
   } catch (e) {
@@ -164,33 +179,38 @@ const postExchangeAuthNum: RequestHandler = async (req: Request, res: Response, 
   }
 }
 
-const getReturnAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const shareId = req.share.id
-
+export const getReturnAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const shareId = req.share.id
+
     const authNum = await getReturnAuthNumber(shareId)
 
-    res.status(200).json({
+    if (authNum === null) {
+      throw new Err('여기 비밀번호 없어. 저리 가!', 405)
+    }
+
+    const response: rentalType.GetReturnAuthNumRes = {
       authPassword: authNum
-    }).end()
+    }
+    res.status(200).json(response).end()
   } catch (e) {
     next(e)
   }
 }
 
-const postReturnAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { id, name, description, price, returnDate, period, isPublic, userId, userName, userLink } = req.share
-
+export const postReturnAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const { id, name, description, price, returnDate, period, isPublic, userId, userName, userLink } = req.share
+
     const authNum = await getShareAuthNumber(id)
 
     if (authNum === null || authNum !== req.body.authPassword) {
       throw new Err('그런 번호 없어. 저리 가!', 405)
     }
 
-    await db.updateShareStatus(id, ShareStatus.completeReturn)
+    await Share.updateShareStatus(id, ShareStatus.completeReturn)
 
-    await db.createShare({
+    await Share.createShare({
       name,
       description,
       price,
@@ -202,21 +222,18 @@ const postReturnAuthNum: RequestHandler = async (req: Request, res: Response, ne
       userLink
     })
 
-    res.status(201).json().end()
+    res.status(201).end()
   } catch (e) {
     next(e)
   }
 }
 
-const updateShareStatusByTime = async () => {
+export const updateShareStatusByTime = async () => {
   const now = Date.now()
 
   try {
-    await db.updateShareStatusByTime(now, ShareStatus.end)
+    await Share.updateShareStatusByTime(now, ShareStatus.end)
   } catch (e) {
     logger.error(e.stack)
   }
 }
-
-export { verifyRental, getRental, getDetailRental, postRental, getRentalHistory,
-  getExchangeAuthNum, postExchangeAuthNum, getReturnAuthNum, postReturnAuthNum, updateShareStatusByTime }

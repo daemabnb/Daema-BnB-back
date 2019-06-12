@@ -1,26 +1,6 @@
 import { Schema, Model, Document, model } from 'mongoose'
-
-interface IShare {
-  name: string
-  description: string
-  price: string
-  returnDate: Number
-  period: number
-  sharedDate?: Number
-  isPublic: boolean
-  status?: string
-  images?: string[]
-  userId: string
-  userName: string
-  userLink: string
-  clientId?: string
-  clientName?: string
-  clientLink?: string
-  createdAt?: Date
-  updatedAt?: Date
-}
-
-interface ShareDocument extends Document, IShare {}
+import { IShare, ShareDocument, ShareModel, ShareStatus } from '../types/Share'
+import Client from '../types/Client'
 
 const ShareSchema: Schema = new Schema({
   name: {
@@ -92,6 +72,59 @@ const ShareSchema: Schema = new Schema({
   }
 })
 
-const Share: Model<ShareDocument> = model<ShareDocument>('Share', ShareSchema)
+ShareSchema.statics.createShare = (share: IShare): Promise<ShareDocument> => {
+  return new Share(share).save()
+}
 
-export { Share, IShare, ShareDocument }
+ShareSchema.statics.findShareById = (shareId: string): Promise<ShareDocument | null> => {
+  return Share.findById(shareId).exec()
+}
+
+ShareSchema.statics.findOwnShares = (userId: string, skip: number, limit: number): Promise<ShareDocument[]> => {
+  return Share.find({ userId }).skip(skip).limit(limit).exec()
+}
+
+ShareSchema.statics.findRentals = (skip: number, limit: number): Promise<ShareDocument[]> => {
+  return Share.find({ status: ShareStatus.beforeExchage }).skip(skip).limit(limit).exec()
+}
+
+ShareSchema.statics.findOwnRental = (clientId: string, skip: number, limit: number): Promise<ShareDocument[]> => {
+  return Share.find({ clientId }).skip(skip).limit(limit).exec()
+}
+
+ShareSchema.statics.updateShare = (shareId: string, share: IShare): Promise<number> => {
+  return Share.updateOne({ _id: shareId }, { share }).exec()
+}
+
+ShareSchema.statics.updateShareClient = (shareId: string, status: ShareStatus, client: Client): Promise<number> => {
+  return Share.updateOne({ _id: shareId }, {
+    $set: {
+      sharedDate: Date.now(),
+      clientId: client.id,
+      clientName: client.name,
+      clientLink: client.link,
+      status
+    }
+  }).exec()
+}
+
+ShareSchema.statics.updateShareStatus = (shareId: string, status: ShareStatus): Promise<number> => {
+  return Share.updateOne({ _id: shareId }, {
+    $set: { status }
+  }).exec()
+}
+
+ShareSchema.statics.updateShareStatusByTime = (time: number, status: ShareStatus) => {
+  return Share.updateMany({
+    returnDate: { $lt: time },
+    status: { $ne: ShareStatus.end }
+  }, {
+    $set: { status }
+  }).exec()
+}
+
+ShareSchema.statics.deleteShare = (shareId: string): Promise<{}> => {
+  return Share.deleteOne({ _id: shareId }).exec()
+}
+
+export const Share: ShareModel = model<ShareDocument, ShareModel>('Share', ShareSchema)

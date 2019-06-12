@@ -1,7 +1,7 @@
 import * as nodemailer from 'nodemailer'
 import { emailId, emailPw } from '../config'
 
-const mailer = async (email: string): Promise<string> => {
+export default async (email: string): Promise<string> => {
   const authNum = createAuthNum()
   const MAIL_SERVICE = 'Gmail'
   const DSM_MAIL = '@dsm.hs.kr'
@@ -42,5 +42,3 @@ const createAuthNum = (): string => {
 
   return authNum
 }
-
-export default mailer

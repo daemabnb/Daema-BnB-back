@@ -1,7 +1,7 @@
 import * as request from 'supertest'
 import * as sinon from 'sinon'
 import app from '../src/app'
-import DB from '../src/model/index'
+import { Share } from '../src/model/share'
 import * as redis from '../src/util/redis'
 import { createToken } from '../src/util/jwt'
 
@@ -16,13 +16,13 @@ describe('share test', () => {
 
     sandbox = sinon.createSandbox()
 
-    sandbox.stub(DB.prototype, 'createShare').value(() => {
+    sandbox.stub(Share, 'createShare').value(() => {
       return new Promise(resolve => {
         resolve()
       })
     })
 
-    sandbox.stub(DB.prototype, 'findRentals').value(() => {
+    sandbox.stub(Share, 'findRentals').value(() => {
       return new Promise(resolve => {
         resolve([{
           _id: 'abcdefghijkl',
@@ -36,7 +36,7 @@ describe('share test', () => {
       })
     })
 
-    sandbox.stub(DB.prototype, 'findShareById').value(() => {
+    sandbox.stub(Share, 'findShareById').value(() => {
       return new Promise(resolve => {
         resolve({
           _id: 'abcdefghijkl',
@@ -54,13 +54,13 @@ describe('share test', () => {
       })
     })
 
-    sandbox.stub(DB.prototype, 'updateShareClient').value(() => {
+    sandbox.stub(Share, 'updateShareClient').value(() => {
       return new Promise(resolve => {
         resolve()
       })
     })
 
-    sandbox.stub(DB.prototype, 'findOwnRental').value(() => {
+    sandbox.stub(Share, 'findOwnRental').value(() => {
       return new Promise(resolve => {
         resolve([{
           _id: 'abcdefghijkl',
@@ -76,7 +76,7 @@ describe('share test', () => {
       })
     })
 
-    sandbox.stub(DB.prototype, 'updateShareStatus').value(() => {
+    sandbox.stub(Share, 'updateShareStatus').value(() => {
       return new Promise(resolve => {
         resolve()
       })

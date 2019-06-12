@@ -9,7 +9,7 @@ const logFormmat = winston.format.printf(
   info => `[${new Date().toString()}] ${info.level}: ${info.message}`
 )
 
-const logger: winston.Logger = winston.createLogger({
+export default winston.createLogger({
   transports: [
     new DailyRotateFile({
       level: 'info',
@@ -25,5 +25,3 @@ const logger: winston.Logger = winston.createLogger({
     })
   ]
 })
-
-export default logger

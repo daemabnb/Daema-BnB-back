@@ -1,9 +1,9 @@
 import * as request from 'supertest'
 import * as sinon from 'sinon'
 import app from '../src/app'
+import { User } from '../src/model/user'
 import { createToken } from '../src/util/jwt'
 import * as redis from '../src/util/redis'
-import DB from '../src/model/index'
 
 describe('user test', () => {
   let req: request.SuperTest<request.Test>
@@ -22,7 +22,7 @@ describe('user test', () => {
       })
     })
 
-    sandbox.stub(DB.prototype, 'createUser').value(() => {
+    sandbox.stub(User, 'createUser').value(() => {
       return new Promise(resolve => {
         resolve()
       })

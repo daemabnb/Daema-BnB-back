@@ -1,19 +1,17 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
-import DB, { UserDocument } from '../../model/index'
+import { User } from '../../model/user'
+import * as userType from '../../types/ctrl/user'
 import mailer from '../../util/mailer'
 import * as redis from '../../util/redis'
-import passport from '../../util/passport'
+import { getRequest } from '../../util/request'
 import { createToken } from '../../util/jwt'
-import logger from '../../util/logger'
 
-const db: DB = new DB()
-
-const postAuthemail: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { email } = req.body
-
+export const postAuthemail: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const authNum = await mailer(email)
+    const body: userType.PostAuthemailBody = req.body
+    const { email } = body
 
+    const authNum = await mailer(email)
     await redis.addAuthWaitingList(email, authNum)
 
     res.status(201).end()
@@ -22,41 +20,41 @@ const postAuthemail: RequestHandler = async (req: Request, res: Response, next: 
   }
 }
 
-const getSigninFacebook: RequestHandler = passport.authenticate('facebook', {
-  session: false,
-  scope: ['public_profile', 'user_link']
-})
+export const getSigninFacebook: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const body: userType.GetSigninFacebookBody = req.body
+    const { accessToken } = body
 
-const signinFacebookCallback: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
-  passport.authenticate('facebook', {
-    session: false
-  }, (err, user, info) => {
-    logger.info(JSON.stringify(info))
+    const uri = `https://graph.facebook.com/me?fields=id,name,link&access_token=${accessToken}`
+    const facebookRes = await getRequest(uri)
+    const facebookResBody = await facebookRes.json()
+    const { id, name, profileUrl } = facebookResBody
 
-    if (err) {
-      next(err)
+    const user = await User.findUserById(id)
+
+    const token = user ? createToken(user.profileId, user.displayName, user.profileId, user.email) :
+      createToken(id, name, profileUrl)
+    const response: userType.GetSigninFacebookRes = {
+      token,
+      isAdmin: user ? user.isAdmin : undefined
     }
 
-    const { id, displayName, profileUrl, email, isAdmin } = info
-    const token = createToken(id, displayName, profileUrl, email)
-
-    if (user === true) {
-      return res.status(200).json({
-        nickname: displayName,
-        isAdmin,
-        token
-      }).end()
+    if (user) {
+      res.status(200).json(response).end()
+      return
     }
 
-    res.status(201).json({ token }).end()
-
-  })(req, res, next)
+    res.status(201).json(response).end()
+  } catch (error) {
+    next(error)
+  }
 }
 
-const postSignup: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, authNum } = req.body
-
+export const postSignup: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const body: userType.PostSignupReq = req.body
+    const { email, authNum } = body
+
     const savedAuthNum = await redis.getSaleAuthNumber(email)
 
     if (authNum !== savedAuthNum) {
@@ -66,7 +64,7 @@ const postSignup: RequestHandler = async (req: Request, res: Response, next: Nex
 
     const { id, displayName, profileUrl } = req.user
 
-    await db.createUser({
+    await User.createUser({
       profileId: id,
       displayName,
       email,
@@ -75,10 +73,9 @@ const postSignup: RequestHandler = async (req: Request, res: Response, next: Nex
 
     const token = createToken(id, displayName, profileUrl, email)
 
-    res.status(201).json({ token }).end()
+    const response: userType.PostSignupRes = { token }
+    res.status(201).json(response).end()
   } catch (e) {
     next(e)
   }
 }
-
-export { postAuthemail, getSigninFacebook, signinFacebookCallback, postSignup }

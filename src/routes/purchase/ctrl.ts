@@ -1,16 +1,17 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
+import { Sale } from '../../model/sale'
+import { SaleStatus } from '../../types/Sale'
+import * as purchaseType from '../../types/ctrl/purchase'
 import { getDownloadUrl, ImageType } from '../../util/aws'
 import { setSaleAuthNumber, getSaleAuthNumber } from '../../util/redis'
 import Err from '../../util/error'
-import DB, { SaleStatus } from '../../model/index'
 
-const db: DB = new DB()
-
-const verifyPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const itemId = req.params.id
-
+export const verifyPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const sale = await db.findSaleById(itemId)
+    const params: purchaseType.VerifyPurchaseParams = req.params
+    const itemId = params.id
+
+    const sale = await Sale.findSaleById(itemId)
 
     if (sale === null) {
       throw new Err('존재하지 않는 sale id. 저리 가!', 405)
@@ -24,13 +25,14 @@ const verifyPurchase: RequestHandler = async (req: Request, res: Response, next:
   }
 }
 
-const getPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { offset, limit } = req.query
-
+export const getPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const sales = await db.findPurchases(parseInt(offset, 10), parseInt(limit, 10))
+    const query: purchaseType.GetPurchaseQuery = req.query
+    const { offset, limit } = query
 
-    const responseSales = sales.map(sale => {
+    const sales = await Sale.findPurchases(parseInt(offset, 10), parseInt(limit, 10))
+
+    const response: purchaseType.GetPurchaseRes[] = sales.map(sale => {
       const { _id, name, price } = sale
       const images = sale.images as string[]
       const image = getDownloadUrl(ImageType.Sale, _id, [images[0]])
@@ -39,50 +41,55 @@ const getPurchase: RequestHandler = async (req: Request, res: Response, next: Ne
         itemId: _id,
         itemName: name,
         itemPrice: price,
-        itemImage: image,
+        itemImages: image,
         isFree: price === '0' ? true : false
       }
     })
 
-    res.status(200).json(responseSales).end()
+    res.status(200).json(response).end()
   } catch (e) {
     next(e)
   }
 }
 
-const getDetailPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { _id, name, description, price, status, images, userId, userName, userLink, clientId, clientName, clientLink }
+export const getDetailPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { _id, name, description, price, status, images, userId, userName, userLink, clientId, clientName, clientLink }
     = req.sale
 
-  const downloadUrls: string[] = getDownloadUrl(ImageType.Sale,_id, images as string[])
+    const downloadUrls: string[] = getDownloadUrl(ImageType.Sale,_id, images as string[])
 
-  res.status(200).json({
-    itemId: _id,
-    itemName: name,
-    itemDescription: description,
-    itemPrice: price,
-    saleStatus: status,
-    itemImages: downloadUrls,
-    isFree: price === '0' ? true : false,
-    ownerId: userId,
-    ownerName: userName,
-    ownerLink: userLink,
-    clientId,
-    clientName,
-    clientLink
-  }).end()
+    const response: purchaseType.GetDetailPurchaseRes = {
+      itemId: _id,
+      itemName: name,
+      itemDescription: description,
+      itemPrice: price,
+      saleStatus: status,
+      itemImages: downloadUrls,
+      isFree: price === '0' ? true : false,
+      ownerId: userId,
+      ownerName: userName,
+      ownerLink: userLink,
+      clientId,
+      clientName,
+      clientLink
+    }
+    res.status(200).json(response).end()
+  } catch (error) {
+    next(error)
+  }
 }
 
-const postPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { _id, status } = req.sale
-  const { id, displayName, profileUrl } = req.user
-
+export const postPurchase: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const { _id, status } = req.sale
+    const { id, displayName, profileUrl } = req.user
+
     if (status !== SaleStatus.onSale) {
       throw new Err('안 팔아. 저리 가!', 405)
     }
 
-    await db.updateSaleClient(_id, SaleStatus.beforeExchage, {
+    await Sale.updateSaleClient(_id, SaleStatus.beforeExchage, {
       id,
       name: displayName,
       link: profileUrl
@@ -96,60 +103,61 @@ const postPurchase: RequestHandler = async (req: Request, res: Response, next: N
   }
 }
 
-const getPurchaseHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { offset, limit } = req.query
-  const userId = req.user.id
-
+export const getPurchaseHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const purchases = await db.findOwnPurchase(userId, offset, limit)
+    const query: purchaseType.GetPurchaseHistoryQuery = req.query
+    const { offset, limit } = query
+    const userId = req.user.id
 
-    const responsePurchases = purchases.map(purchase => {
-      return {
-        itemId: purchase._id,
-        itemName: purchase.name,
-        itemDescription: purchase.description,
-        saleStatus: purchase.status,
-        registerDate: purchase.createdAt,
-        purchaseDate: purchase.selledDate
-      }
-    })
+    const purchases = await Sale.findOwnPurchase(userId, parseInt(offset, 10), parseInt(limit, 10))
 
-    res.status(200).json(responsePurchases).end()
+    const response: purchaseType.GetPurchaseHistoryRes[] = purchases.map(purchase => ({
+      itemId: purchase._id,
+      itemName: purchase.name,
+      itemDescription: purchase.description,
+      saleStatus: purchase.status,
+      registerDate: purchase.createdAt,
+      purchaseDate: purchase.selledDate
+    }))
+
+    res.status(200).json(response).end()
   } catch (e) {
     next(e)
   }
 }
 
-const getExchageAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const saleId = req.sale.id
+export const getExchageAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const saleId = req.sale.id
     const authNum = await getSaleAuthNumber(saleId)
 
-    res.status(200).json({
+    if (authNum === null) {
+      throw new Err('얘는 인증번호가 없어. 저리 가!', 405)
+    }
+
+    const response: purchaseType.GetExchageAuthNumRes = {
       authPassword: authNum
-    }).end()
+    }
+    res.status(200).json(response).end()
   } catch (e) {
     next(e)
   }
 }
 
-const postExchageAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const saleId = req.sale.id
-
+export const postExchageAuthNum: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const saleId = req.sale.id
+
     const authNum = await getSaleAuthNumber(saleId)
 
     if (authNum === null || authNum !== req.body.authPassword) {
       throw new Err('그런 번호 없어. 저리 가!', 405)
     }
 
-    await db.updateSaleStatus(saleId, SaleStatus.selled)
+    await Sale.updateSaleStatus(saleId, SaleStatus.selled)
 
     res.status(201).end()
   } catch (e) {
     next(e)
   }
 }
-
-export { verifyPurchase, getPurchase, getDetailPurchase, postPurchase, getPurchaseHistory,
-  getExchageAuthNum, postExchageAuthNum }

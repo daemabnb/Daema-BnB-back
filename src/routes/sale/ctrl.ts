@@ -1,17 +1,18 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
+import { Sale } from '../../model/sale'
+import { SaleStatus } from '../../types/Sale'
+import * as saleType from '../../types/ctrl/sale'
 import { getUploadUrl, getDownloadUrl, ImageType } from '../../util/aws'
 import Err from '../../util/error'
 import { getImageNames, getImageLinks } from '../../util/image'
-import DB, { SaleStatus } from '../../model/index'
 
-const db: DB = new DB()
-
-const verifySale: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-  const itemId = req.params.id
-  const userId = req.user.id
-
+export const verifySale: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const sale = await db.findSaleById(itemId)
+    const params: saleType.VerifySaleParams = req.params
+    const itemId = params.id
+    const userId = req.user.id
+
+    const sale = await Sale.findSaleById(itemId)
 
     if (sale === null) {
       throw new Err('존재하지 않는 sale id. 저리 가!', 405)
@@ -29,15 +30,15 @@ const verifySale: RequestHandler = async (req: Request, res: Response, next: Nex
   }
 }
 
-const postSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { itemName, itemDescription, itemPrice, images }:
-    {itemName: string, itemDescription: string, itemPrice: string, images: string[]} = req.body
-  const { id, displayName, profileUrl } = req.user
-
+export const postSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const body: saleType.PostSaleBody = req.body
+    const { itemName, itemDescription, itemPrice, images } = body
+    const { id, displayName, profileUrl } = req.user
+
     const imageNames = await getImageNames(images)
 
-    const sale = await db.createSale({
+    const sale = await Sale.createSale({
       name: itemName,
       description: itemDescription,
       price: itemPrice,
@@ -49,20 +50,20 @@ const postSale: RequestHandler = async (req: Request, res: Response, next: NextF
 
     const urls = getUploadUrl(ImageType.Sale, sale._id, imageNames)
 
-    res.status(201).json(urls).end()
+    const response: saleType.PostSaleRes = { urls }
+    res.status(201).json(response).end()
   } catch (e) {
     next(e)
   }
 }
 
-const getDetailSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getDetailSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { _id, name, description, price, status, images, userId, userName, userLink, clientId, clientName, clientLink }
       = req.sale
-
     const downloadUrls: string[] = getDownloadUrl(ImageType.Sale,_id, images as string[])
 
-    res.status(200).json({
+    const response: saleType.GetDetailSaleRes = {
       itemId: _id,
       itemName: name,
       itemDescription: description,
@@ -76,28 +77,29 @@ const getDetailSale: RequestHandler = async (req: Request, res: Response, next: 
       clientId,
       clientName,
       clientLink
-    }).end()
+    }
+    res.status(200).json(response).end()
   } catch (e) {
     next(e)
   }
 }
 
-const putSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const itemId = req.params.id
-  const { itemName, itemDescription, itemPrice, images }:
-    { itemName: string, itemDescription: string, itemPrice: string, images: string[] }
-    = req.body
-  const saleStatus = req.sale.status as string
-  const { id, displayName, profileUrl } = req.user
-
+export const putSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const parmas: saleType.PutSaleParams = req.params
+    const body: saleType.PutSaleBody = req.body
+    const itemId = parmas.id
+    const { itemName, itemDescription, itemPrice, images } = body
+    const saleStatus = req.sale.status as string
+    const { id, displayName, profileUrl } = req.user
+
     if (saleStatus === SaleStatus.beforeExchage) {
       throw new Err('동작 그만 밑장 빼기냐. 어디서 수정을 시도해?', 405)
     }
 
     const changedImages = await getImageNames(images)
 
-    await db.updateSale(itemId, {
+    await Sale.updateSale(itemId, {
       name: itemName,
       description: itemDescription,
       price: itemPrice,
@@ -110,22 +112,24 @@ const putSale: RequestHandler = async (req: Request, res: Response, next: NextFu
     const newImageLinks = getImageLinks(images, changedImages)
     const newImageUrls = getUploadUrl(ImageType.Sale, itemId, newImageLinks)
 
-    res.status(201).json(newImageUrls).end()
+    const response: saleType.PutSaleRes = { newImageUrls }
+    res.status(201).json(response).end()
   } catch (e) {
     next(e)
   }
 }
 
-const deleteSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const itemId = req.params.id
-  const saleStatus = req.sale.status
-
+export const deleteSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const params: saleType.DeleteSaleParams = req.params
+    const itemId = params.id
+    const saleStatus = req.sale.status
+
     if (saleStatus === SaleStatus.beforeExchage) {
       throw new Err('동작 그만 밑장 빼기냐. 어디서 삭제를 시도해?', 405)
     }
 
-    await db.deleteSale(itemId)
+    await Sale.deleteSale(itemId)
 
     res.status(204).end()
   } catch (e) {
@@ -133,28 +137,25 @@ const deleteSale: RequestHandler = async (req: Request, res: Response, next: Nex
   }
 }
 
-const getSaleHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-  const { offset, limit } = req.query
-  const userId = req.user.id
-
+export const getSaleHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const sales = await db.findOwnSales(userId, parseInt(offset, 10), parseInt(limit, 10))
+    const query: saleType.GetSaleHistoryQuery = req.query
+    const { offset, limit } = query
+    const userId = req.user.id
 
-    const responseSales = sales.map(sale => {
-      return {
-        itemId: sale._id,
-        itemName: sale.name,
-        itemDescription: sale.description,
-        saleStatus: sale.status,
-        registerDate: sale.createdAt,
-        saledDate: sale.selledDate
-      }
-    })
+    const sales = await Sale.findOwnSales(userId, parseInt(offset, 10), parseInt(limit, 10))
 
-    res.status(200).json(responseSales).end()
+    const response: saleType.GetSaleHistoryRes[] = sales.map(sale => ({
+      itemId: sale._id,
+      itemName: sale.name,
+      itemDescription: sale.description,
+      saleStatus: sale.status,
+      registerDate: sale.createdAt,
+      saledDate: sale.selledDate
+    }))
+
+    res.status(200).json(response).end()
   } catch (e) {
     next(e)
   }
 }
-
-export { verifySale, postSale, getDetailSale, putSale, deleteSale, getSaleHistory }

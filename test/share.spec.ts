@@ -1,7 +1,7 @@
 import * as request from 'supertest'
 import * as sinon from 'sinon'
 import { Types } from 'mongoose'
-import DB from '../src/model/index'
+import { Share } from '../src/model/share'
 import app from '../src/app'
 import * as aws from '../src/util/aws'
 import * as image from '../src/util/image'
@@ -18,7 +18,7 @@ describe('share test', () => {
 
     sandbox = sinon.createSandbox()
 
-    sandbox.stub(DB.prototype, 'createShare').value(() => {
+    sandbox.stub(Share, 'createShare').value(() => {
       return new Promise(resolve => {
         resolve({
           _id: Types.ObjectId('abcdefghijkl')
@@ -26,7 +26,7 @@ describe('share test', () => {
       })
     })
 
-    sandbox.stub(DB.prototype, 'findShareById').value(() => {
+    sandbox.stub(Share, 'findShareById').value(() => {
       return new Promise(resolve => {
         resolve({
           _id: 'abcdefghijkl',
@@ -45,7 +45,7 @@ describe('share test', () => {
       })
     })
 
-    sandbox.stub(DB.prototype, 'findOwnShares').value(() => {
+    sandbox.stub(Share, 'findOwnShares').value(() => {
       return new Promise(resolve => {
         resolve([{
           _id: 'abcdefghijkl',
@@ -64,13 +64,13 @@ describe('share test', () => {
       })
     })
 
-    sandbox.stub(DB.prototype, 'updateShare').value(() => {
+    sandbox.stub(Share, 'updateShare').value(() => {
       return new Promise(resolve => {
         resolve()
       })
     })
 
-    sandbox.stub(DB.prototype, 'deleteShare').value(() => {
+    sandbox.stub(Share, 'deleteShare').value(() => {
       return new Promise(resolve => {
         resolve()
       })

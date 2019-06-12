@@ -2,12 +2,12 @@ import * as request from 'supertest'
 import * as sinon from 'sinon'
 import { Types } from 'mongoose'
 import app from '../src/app'
+import { Sale } from '../src/model/sale'
 import { createToken } from '../src/util/jwt'
 import * as aws from '../src/util/aws'
 import * as image from '../src/util/image'
-import DB from '../src/model/index'
 
-describe('user test', () => {
+describe('sale test', () => {
   let req: request.SuperTest<request.Test>
   let token: string
   let sandbox: sinon.SinonSandbox
@@ -18,7 +18,7 @@ describe('user test', () => {
 
     sandbox = sinon.createSandbox()
 
-    sandbox.stub(DB.prototype, 'createSale').value(() => {
+    sandbox.stub(Sale, 'createSale').value(() => {
       return new Promise(resolve => {
         resolve({
           _id: Types.ObjectId('abcdefghijkl')
@@ -26,7 +26,7 @@ describe('user test', () => {
       })
     })
 
-    sandbox.stub(DB.prototype, 'findSaleById').value(() => {
+    sandbox.stub(Sale, 'findSaleById').value(() => {
       return new Promise(resolve => {
         resolve({
           _id: 'abcdefghijkl',
@@ -41,13 +41,13 @@ describe('user test', () => {
       })
     })
 
-    sandbox.stub(DB.prototype, 'updateSale').value(() => {
+    sandbox.stub(Sale, 'updateSale').value(() => {
       return new Promise(resolve => {
         resolve()
       })
     })
 
-    sandbox.stub(DB.prototype, 'deleteSale').value(() => {
+    sandbox.stub(Sale, 'deleteSale').value(() => {
       return new Promise(resolve => {
         resolve()
       })
@@ -64,9 +64,8 @@ describe('user test', () => {
     })
   })
 
-  after((done) => {
+  after(() => {
     sandbox.restore()
-    done()
   })
 
   it('POST /sale', async () => {
