@@ -112,7 +112,7 @@ export const putSale: RequestHandler = async (req: Request, res: Response, next:
     const newImageLinks = getImageLinks(images, changedImages)
     const newImageUrls = getUploadUrl(ImageType.Sale, itemId, newImageLinks)
 
-    const response: saleType.PutSaleRes = { newImageUrls }
+    const response: saleType.PutSaleRes = { urls: newImageUrls }
     res.status(201).json(response).end()
   } catch (e) {
     next(e)

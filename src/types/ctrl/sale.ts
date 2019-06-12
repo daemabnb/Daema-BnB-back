@@ -41,7 +41,7 @@ export interface PutSaleBody {
 }
 
 export interface PutSaleRes {
-  newImageUrls: string[]
+  urls: string[]
 }
 
 export interface DeleteSaleParams {
