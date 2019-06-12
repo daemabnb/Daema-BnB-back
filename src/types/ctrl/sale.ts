@@ -1,47 +1,63 @@
-export interface VerifySaleReq {
-
+export interface VerifySaleParams {
+  id: string
 }
 
-export interface VerifySaleRes {
-  
-}
-
-export interface PostSaleReq {
-  
+export interface PostSaleBody {
+  itemName: string
+  itemDescription: string
+  itemPrice: string
+  images: string[]
 }
 
 export interface PostSaleRes {
-  
-}
-
-export interface GetDetailSaleReq {
-  
+  urls: string[]
 }
 
 export interface GetDetailSaleRes {
-  
+  itemId: string
+  itemName: string
+  itemDescription: string
+  itemPrice: string
+  saleStatus?: string
+  itemImages: string[]
+  isFree: boolean
+  ownerId: string
+  ownerName: string
+  ownerLink: string
+  clientId?: string
+  clientName?: string
+  clientLink?: string
 }
 
-export interface PutSaleReq {
-  
+export interface PutSaleParams {
+  id: string
+}
+
+export interface PutSaleBody {
+  itemName: string
+  itemDescription: string
+  itemPrice: string
+  images: string[]
 }
 
 export interface PutSaleRes {
-  
+  newImageUrls: string[]
 }
 
-export interface DeleteSaleReq {
-  
+export interface DeleteSaleParams {
+  id: string
 }
 
-export interface DeleteSaleRes {
-  
-}
-
-export interface GetSaleHistoryReq {
-  
+export interface GetSaleHistoryQuery {
+  offset: string
+  limit: string
 }
 
 export interface GetSaleHistoryRes {
-  
+  itemId: string
+  itemName: string
+  itemDescription: string
+  saleStatus?: string
+  registerDate?: Date
+  saledDate?: Date
 }

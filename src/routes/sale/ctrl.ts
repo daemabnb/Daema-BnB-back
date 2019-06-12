@@ -1,15 +1,17 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { Sale } from '../../model/sale'
 import { SaleStatus } from '../../types/Sale'
+import * as saleType from '../../types/ctrl/sale'
 import { getUploadUrl, getDownloadUrl, ImageType } from '../../util/aws'
 import Err from '../../util/error'
 import { getImageNames, getImageLinks } from '../../util/image'
 
 export const verifySale: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-  const itemId = req.params.id
-  const userId = req.user.id
-
   try {
+    const params: saleType.VerifySaleParams = req.params
+    const itemId = params.id
+    const userId = req.user.id
+
     const sale = await Sale.findSaleById(itemId)
 
     if (sale === null) {
@@ -29,11 +31,11 @@ export const verifySale: RequestHandler = async (req: Request, res: Response, ne
 }
 
 export const postSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { itemName, itemDescription, itemPrice, images }:
-    {itemName: string, itemDescription: string, itemPrice: string, images: string[]} = req.body
-  const { id, displayName, profileUrl } = req.user
-
   try {
+    const body: saleType.PostSaleBody = req.body
+    const { itemName, itemDescription, itemPrice, images } = body
+    const { id, displayName, profileUrl } = req.user
+
     const imageNames = await getImageNames(images)
 
     const sale = await Sale.createSale({
@@ -48,7 +50,8 @@ export const postSale: RequestHandler = async (req: Request, res: Response, next
 
     const urls = getUploadUrl(ImageType.Sale, sale._id, imageNames)
 
-    res.status(201).json(urls).end()
+    const response: saleType.PostSaleRes = { urls }
+    res.status(201).json(response).end()
   } catch (e) {
     next(e)
   }
@@ -58,10 +61,9 @@ export const getDetailSale: RequestHandler = async (req: Request, res: Response,
   try {
     const { _id, name, description, price, status, images, userId, userName, userLink, clientId, clientName, clientLink }
       = req.sale
-
     const downloadUrls: string[] = getDownloadUrl(ImageType.Sale,_id, images as string[])
 
-    res.status(200).json({
+    const response: saleType.GetDetailSaleRes = {
       itemId: _id,
       itemName: name,
       itemDescription: description,
@@ -75,21 +77,22 @@ export const getDetailSale: RequestHandler = async (req: Request, res: Response,
       clientId,
       clientName,
       clientLink
-    }).end()
+    }
+    res.status(200).json(response).end()
   } catch (e) {
     next(e)
   }
 }
 
 export const putSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const itemId = req.params.id
-  const { itemName, itemDescription, itemPrice, images }:
-    { itemName: string, itemDescription: string, itemPrice: string, images: string[] }
-    = req.body
-  const saleStatus = req.sale.status as string
-  const { id, displayName, profileUrl } = req.user
-
   try {
+    const parmas: saleType.PutSaleParams = req.params
+    const body: saleType.PutSaleBody = req.body
+    const itemId = parmas.id
+    const { itemName, itemDescription, itemPrice, images } = body
+    const saleStatus = req.sale.status as string
+    const { id, displayName, profileUrl } = req.user
+  
     if (saleStatus === SaleStatus.beforeExchage) {
       throw new Err('동작 그만 밑장 빼기냐. 어디서 수정을 시도해?', 405)
     }
@@ -109,17 +112,19 @@ export const putSale: RequestHandler = async (req: Request, res: Response, next:
     const newImageLinks = getImageLinks(images, changedImages)
     const newImageUrls = getUploadUrl(ImageType.Sale, itemId, newImageLinks)
 
-    res.status(201).json(newImageUrls).end()
+    const response: saleType.PutSaleRes = { newImageUrls }
+    res.status(201).json(response).end()
   } catch (e) {
     next(e)
   }
 }
 
 export const deleteSale: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const itemId = req.params.id
-  const saleStatus = req.sale.status
-
   try {
+    const params: saleType.DeleteSaleParams = req.params
+    const itemId = params.id
+    const saleStatus = req.sale.status
+
     if (saleStatus === SaleStatus.beforeExchage) {
       throw new Err('동작 그만 밑장 빼기냐. 어디서 삭제를 시도해?', 405)
     }
@@ -133,24 +138,23 @@ export const deleteSale: RequestHandler = async (req: Request, res: Response, ne
 }
 
 export const getSaleHistory: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-  const { offset, limit } = req.query
-  const userId = req.user.id
-
   try {
+    const query: saleType.GetSaleHistoryQuery = req.query
+    const { offset, limit } = query
+    const userId = req.user.id
+
     const sales = await Sale.findOwnSales(userId, parseInt(offset, 10), parseInt(limit, 10))
 
-    const responseSales = sales.map(sale => {
-      return {
-        itemId: sale._id,
-        itemName: sale.name,
-        itemDescription: sale.description,
-        saleStatus: sale.status,
-        registerDate: sale.createdAt,
-        saledDate: sale.selledDate
-      }
-    })
+    const response: saleType.GetSaleHistoryRes[] = sales.map(sale => ({
+      itemId: sale._id,
+      itemName: sale.name,
+      itemDescription: sale.description,
+      saleStatus: sale.status,
+      registerDate: sale.createdAt,
+      saledDate: sale.selledDate
+    }))
 
-    res.status(200).json(responseSales).end()
+    res.status(200).json(response).end()
   } catch (e) {
     next(e)
   }
