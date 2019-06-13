@@ -11,6 +11,12 @@ export interface GetSigninFacebookRes {
   isAdmin?: boolean
 }
 
+export interface FacebookRes {
+  id: string
+  name: string
+  link: string
+}
+
 export interface PostSignupReq {
   email: string
   authNum: string

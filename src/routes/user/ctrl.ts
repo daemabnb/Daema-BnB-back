@@ -27,13 +27,13 @@ export const getSigninFacebook: RequestHandler = async (req: Request, res: Respo
 
     const uri = `https://graph.facebook.com/me?fields=id,name,link&access_token=${accessToken}`
     const facebookRes = await getRequest(uri)
-    const facebookResBody = JSON.parse(facebookRes)
-    const { id, name, profileUrl } = facebookResBody
+    const facebookResBody: userType.FacebookRes = JSON.parse(facebookRes)
+    const { id, name, link } = facebookResBody
 
     const user = await User.findUserByProfileId(id)
 
-    const token = user ? createToken(user.profileId, user.displayName, user.profileId, user.email) :
-      createToken(id, name, profileUrl)
+    const token = user ? createToken(user.profileId, user.displayName, user.profileUrl, user.email) :
+      createToken(id, name, link)
     const response: userType.GetSigninFacebookRes = {
       token,
       isAdmin: user ? user.isAdmin : undefined
