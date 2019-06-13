@@ -1,11 +1,13 @@
-export const getRequest = async (uri: string): Promise<Response> => {
-  try {
-    const init: RequestInit = {
-      method: 'GET'
-    }
+import * as request from 'request'
 
-    return await fetch(uri, init)
-  } catch (error) {
-    throw new Error(error)
-  }
+export const getRequest = async (uri: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    request.get(uri, (err, res, data) => {
+      if (err) {
+        reject()
+      }
+
+      resolve(data)
+    })
+  })
 }
