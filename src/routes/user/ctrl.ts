@@ -30,7 +30,7 @@ export const getSigninFacebook: RequestHandler = async (req: Request, res: Respo
     const facebookResBody = JSON.parse(facebookRes)
     const { id, name, profileUrl } = facebookResBody
 
-    const user = await User.findUserById(id)
+    const user = await User.findUserByProfileId(id)
 
     const token = user ? createToken(user.profileId, user.displayName, user.profileId, user.email) :
       createToken(id, name, profileUrl)
