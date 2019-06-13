@@ -25,7 +25,7 @@ const ShareSchema: Schema = new Schema({
   },
   sharedDate: {
     type: Number,
-    required: true
+    required: false
   },
   isPublic: {
     type: Boolean,
