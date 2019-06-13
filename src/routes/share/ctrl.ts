@@ -29,7 +29,7 @@ export const verifyShare: RequestHandler = async (req: Request, res: Response, n
 export const postShare: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const body: shareType.PostShareBody = req.body
-    const { itemName, itemDescription, itemPrice, returnDate, period, isPublic, images } = body
+    const { itemName, itemDescription, itemPrice, deadline, period, isPublic, images } = body
     const { id, displayName, profileUrl } = req.user
 
     const imageNames = await getImageNames(images)
@@ -38,7 +38,7 @@ export const postShare: RequestHandler = async (req: Request, res: Response, nex
       name: itemName,
       description: itemDescription,
       price: itemPrice,
-      returnDate,
+      returnDate: deadline,
       period,
       isPublic,
       images: imageNames,
