@@ -33,6 +33,10 @@ app.use(cors())
   .use(helmet())
   .use(express.json())
   .use(express.urlencoded({ extended: false }))
+  .use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+    reqLogger(req)
+    next()
+  })
   .use(router)
   .use((req: express.Request, res: express.Response) => res.status(404).end())
   .use((err: Err, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -41,6 +45,15 @@ app.use(cors())
 
     res.status(err.status || 500).end()
   })
+
+const reqLogger = (req: express.Request) => {
+  const baseUrl = req.originalUrl
+  const params = JSON.stringify(req.params)
+  const query = JSON.stringify(req.query)
+  const body = JSON.stringify(req.body)
+
+  logger.info(`baseUrl: ${baseUrl}\nparams: ${params}\nquery: ${query}\nbody: ${body}`)
+}
 
 cron('0 0 * * * *', updateShareStatusByTime)
 

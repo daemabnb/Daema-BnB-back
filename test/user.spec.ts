@@ -16,7 +16,7 @@ describe('user test', () => {
 
     sandbox = sinon.createSandbox()
 
-    sandbox.stub(redis, 'getSaleAuthNumber').value(() => {
+    sandbox.stub(redis, 'getEmailAuthNumber').value(() => {
       return new Promise(resolve => {
         resolve('1234')
       })

@@ -4,7 +4,7 @@ import { verifyTokenWithoutEmail } from '../../util/jwt'
 
 const userRouter: Router = Router()
 
-userRouter.post('/authemail', ctrl.postAuthemail)
+userRouter.post('/authemail', verifyTokenWithoutEmail, ctrl.postAuthemail)
   .post('/signin/facebook', ctrl.getSigninFacebook)
   .post('/signup', verifyTokenWithoutEmail, ctrl.postSignup)
 
