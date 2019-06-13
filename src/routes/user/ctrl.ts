@@ -55,7 +55,7 @@ export const postSignup: RequestHandler = async (req: Request, res: Response, ne
     const body: userType.PostSignupReq = req.body
     const { email, authNum } = body
 
-    const savedAuthNum = await redis.getSaleAuthNumber(email)
+    const savedAuthNum = await redis.getEmailAuthNumber(email)
 
     if (authNum !== savedAuthNum) {
       res.status(405).end()
