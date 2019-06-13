@@ -7,6 +7,10 @@ export const getRequest = async (uri: string): Promise<any> => {
         reject()
       }
 
+      if (res.statusCode === 400) {
+        reject()
+      }
+
       resolve(data)
     })
   })

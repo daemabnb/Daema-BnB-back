@@ -6,7 +6,7 @@ export interface PostShareBody {
   itemName: string
   itemDescription: string
   itemPrice: string
-  returnDate: number
+  deadline: number
   period: number
   isPublic: boolean
   images: string[]
