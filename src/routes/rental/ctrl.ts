@@ -227,13 +227,3 @@ export const postReturnAuthNum: RequestHandler = async (req: Request, res: Respo
     next(e)
   }
 }
-
-export const updateShareStatusByTime = async () => {
-  const now = Date.now()
-
-  try {
-    await Share.updateShareStatusByTime(now, ShareStatus.end)
-  } catch (e) {
-    logger.error(e.stack)
-  }
-}

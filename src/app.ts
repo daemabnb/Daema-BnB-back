@@ -8,9 +8,7 @@ import { ShareDocument } from './types/Share'
 import logger from './util/logger'
 import slack from './util/slack'
 import router from './routes/index'
-import { updateShareStatusByTime } from './routes/rental/ctrl'
 import Err from './util/error'
-import cron from './util/cron'
 
 const mongooseOptions: mongoose.ConnectionOptions = {
   useNewUrlParser: true
@@ -54,7 +52,5 @@ const reqLogger = (req: express.Request) => {
 
   logger.info(`baseUrl: ${baseUrl}\nparams: ${params}\nquery: ${query}\nbody: ${body}`)
 }
-
-cron('0 0 * * * *', updateShareStatusByTime)
 
 export default app
