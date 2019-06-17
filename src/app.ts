@@ -44,7 +44,7 @@ app.use(cors())
     res.status(err.status || 500).end()
   })
 
-const reqLogger = (req: express.Request) => {
+const reqLogger = (req: express.Request): void => {
   const baseUrl = req.originalUrl
   const params = JSON.stringify(req.params)
   const query = JSON.stringify(req.query)
