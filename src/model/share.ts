@@ -114,15 +114,6 @@ ShareSchema.statics.updateShareStatus = (shareId: string, status: ShareStatus): 
   }).exec()
 }
 
-ShareSchema.statics.updateShareStatusByTime = (time: number, status: ShareStatus) => {
-  return Share.updateMany({
-    returnDate: { $lt: time },
-    status: { $ne: ShareStatus.end }
-  }, {
-    $set: { status }
-  }).exec()
-}
-
 ShareSchema.statics.deleteShare = (shareId: string): Promise<{}> => {
   return Share.deleteOne({ _id: shareId }).exec()
 }
