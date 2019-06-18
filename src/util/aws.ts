@@ -13,15 +13,21 @@ export enum ImageType {
   Share = 'share'
 }
 
-const s3: AWS.S3 = new AWS.S3()
-
 const region = 'ap-northeast-2'
 const bucketName = 'daemabnb-image'
 
 AWS.config.update({
   accessKeyId: accessKey,
   secretAccessKey: secretAccessKey,
-  region
+  region,
+  signatureVersion: 'v4'
+})
+
+const s3: AWS.S3 = new AWS.S3({
+  accessKeyId: accessKey,
+  secretAccessKey: secretAccessKey,
+  region: 'ap-northeast-2',
+  signatureVersion: 'v4'
 })
 
 const getParams = (key: string, bucket: string = bucketName, expires: number = 60): SignedUrlParams => {
