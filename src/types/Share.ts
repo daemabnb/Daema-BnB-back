@@ -40,6 +40,5 @@ export interface ShareModel extends Model<ShareDocument> {
   updateShare(shareId: string, share: IShare): Promise<number>
   updateShareClient(shareId: string, status: ShareStatus, client: Client): Promise<number>
   updateShareStatus(shareId: string, status: ShareStatus): Promise<number>
-  updateShareStatusByTime(time: number, status: ShareStatus): Promise<{}>
   deleteShare(shareId: string): Promise<{}>
 }

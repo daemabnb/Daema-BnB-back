@@ -25,7 +25,7 @@ const ShareSchema: Schema = new Schema({
   },
   sharedDate: {
     type: Number,
-    required: true
+    required: false
   },
   isPublic: {
     type: Boolean,
@@ -110,15 +110,6 @@ ShareSchema.statics.updateShareClient = (shareId: string, status: ShareStatus, c
 
 ShareSchema.statics.updateShareStatus = (shareId: string, status: ShareStatus): Promise<number> => {
   return Share.updateOne({ _id: shareId }, {
-    $set: { status }
-  }).exec()
-}
-
-ShareSchema.statics.updateShareStatusByTime = (time: number, status: ShareStatus) => {
-  return Share.updateMany({
-    returnDate: { $lt: time },
-    status: { $ne: ShareStatus.end }
-  }, {
     $set: { status }
   }).exec()
 }
