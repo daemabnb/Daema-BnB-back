@@ -1,5 +1,4 @@
 import * as AWS from 'aws-sdk'
-import { Types } from 'mongoose'
 import { accessKey, secretAccessKey } from '../config'
 
 interface SignedUrlParams {
