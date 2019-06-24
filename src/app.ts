@@ -5,7 +5,7 @@ import * as helmet from 'helmet'
 import { mongoUri } from './config'
 import { SaleDocument } from './types/Sale'
 import { ShareDocument } from './types/Share'
-import logger from './util/logger'
+import logger, { reqLogger } from './util/logger'
 import slack from './util/slack'
 import router from './routes/index'
 import Err from './util/error'
@@ -43,14 +43,5 @@ app.use(cors())
 
     res.status(err.status || 500).end()
   })
-
-const reqLogger = (req: express.Request): void => {
-  const baseUrl = req.originalUrl
-  const params = JSON.stringify(req.params)
-  const query = JSON.stringify(req.query)
-  const body = JSON.stringify(req.body)
-
-  logger.info(`baseUrl: ${baseUrl}\nparams: ${params}\nquery: ${query}\nbody: ${body}`)
-}
 
 export default app
