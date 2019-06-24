@@ -1,10 +1,8 @@
 import * as winston from 'winston'
-import * as DailyRotateFile from 'winston-daily-rotate-file'
+import { s3stream } from './aws'
 import { Request } from 'express'
 
-const INFO_LOG_FILE = './log/system.log'
 const ERROR_LOG_FILE = './log/error/error.log'
-const DATE_PATTERN = 'YYYY_MM-DD-HH'
 
 const logFormmat = winston.format.printf(
   info => `[${new Date().toString()}] ${info.level}: ${info.message}`
@@ -12,12 +10,9 @@ const logFormmat = winston.format.printf(
 
 const logger = winston.createLogger({
   transports: [
-    new DailyRotateFile({
+    new (winston.transports.Stream)({
       level: 'info',
-      filename: INFO_LOG_FILE,
-      datePattern: DATE_PATTERN,
-      zippedArchive: true,
-      format: logFormmat
+      stream: s3stream
     }),
     new (winston.transports.File)({
       level: 'error',
