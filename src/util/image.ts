@@ -38,6 +38,6 @@ export const saveImage = (images: string[]): Promise<string[]> => {
     return image.substring(lastDot, image.length)
   }).map(async (extension) => {
     const image = await Image.createImage({ extension })
-    return (image._id).concat(extension)
+    return (image._id.toString()).concat(extension)
   }))
 }

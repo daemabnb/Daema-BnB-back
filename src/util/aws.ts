@@ -1,5 +1,5 @@
 import * as AWS from 'aws-sdk'
-import { Types } from 'mongoose'
+import { S3StreamLogger } from 's3-streamlogger'
 import { accessKey, secretAccessKey } from '../config'
 
 interface SignedUrlParams {
@@ -14,7 +14,8 @@ export enum ImageType {
 }
 
 const region = 'ap-northeast-2'
-const bucketName = 'daemabnb-image'
+const IamgeBucket = 'daemabnb-image'
+const logBucket = 'daemabnb-log'
 
 AWS.config.update({
   accessKeyId: accessKey,
@@ -30,7 +31,13 @@ const s3: AWS.S3 = new AWS.S3({
   signatureVersion: 'v4'
 })
 
-const getParams = (key: string, bucket: string = bucketName, expires: number = 60): SignedUrlParams => {
+export const s3stream = new S3StreamLogger({
+  bucket: logBucket,
+  access_key_id: accessKey,
+  secret_access_key: secretAccessKey
+})
+
+const getParams = (key: string, bucket: string = IamgeBucket, expires: number = 60): SignedUrlParams => {
   return {
     Key: key,
     Bucket: bucket,
