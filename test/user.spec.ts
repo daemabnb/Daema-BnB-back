@@ -34,6 +34,12 @@ describe('user test', () => {
     done()
   })
 
+  it('GET /user', async () => {
+    await req
+      .get('/user').expect(200)
+      .set('token', tokenWithoutEmail)
+  })
+
   it('POST /user/signup', async () => {
     await req
       .post('/user/signup').expect(201)
