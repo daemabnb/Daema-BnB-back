@@ -6,7 +6,7 @@ const userRouter: Router = Router()
 
 userRouter.get('/', verifyToken, ctrl.getUser)
   .post('/authemail', verifyTokenWithoutEmail, ctrl.postAuthemail)
-  .post('/signin/facebook', ctrl.getSigninFacebook)
+  .post('/signin/facebook', ctrl.postSigninFacebook)
   .post('/signup', verifyTokenWithoutEmail, ctrl.postSignup)
 
 export default userRouter

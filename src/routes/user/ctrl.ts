@@ -40,7 +40,7 @@ export const postAuthemail: RequestHandler = async (req: Request, res: Response,
   }
 }
 
-export const getSigninFacebook: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+export const postSigninFacebook: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const body: userType.GetSigninFacebookBody = req.body
     const { accessToken } = body
