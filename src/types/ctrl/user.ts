@@ -1,3 +1,7 @@
+export interface getUserRes {
+  isAdmin: boolean
+}
+
 export interface PostAuthemailBody {
   email: string
 }

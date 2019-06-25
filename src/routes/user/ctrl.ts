@@ -5,6 +5,26 @@ import mailer from '../../util/mailer'
 import * as redis from '../../util/redis'
 import { getRequest } from '../../util/request'
 import { createToken } from '../../util/jwt'
+import Err from '../../util/error'
+
+export const getUser: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { id } = req.user
+
+    const user = await User.findUserByProfileId(id)
+
+    if (!user) {
+      throw new Err('없는 사용자, 저리 가!', 403)
+    }
+
+    const response = {
+      isAdmin: user.isAdmin
+    }
+    res.status(200).json(response).end()
+  } catch (e) {
+    next(e)
+  }
+}
 
 export const postAuthemail: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {

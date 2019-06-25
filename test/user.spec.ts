@@ -8,17 +8,27 @@ import * as redis from '../src/util/redis'
 describe('user test', () => {
   let req: request.SuperTest<request.Test>
   let tokenWithoutEmail: string
+  let token: string
   let sandbox: sinon.SinonSandbox
 
   before(() => {
     req = request(app)
     tokenWithoutEmail = createToken('abcd1234', 'nye', 'http://localhost:3000')
+    token = createToken('abcd1234', 'nye', 'http://localhost:3000', 'abc123')
 
     sandbox = sinon.createSandbox()
 
     sandbox.stub(redis, 'getEmailAuthNumber').value(() => {
       return new Promise(resolve => {
         resolve('1234')
+      })
+    })
+
+    sandbox.stub(User, 'findUserByProfileId').value(() => {
+      return new Promise(resolve => {
+        resolve({
+          isAdmin: false
+        })
       })
     })
 
@@ -37,7 +47,7 @@ describe('user test', () => {
   it('GET /user', async () => {
     await req
       .get('/user').expect(200)
-      .set('token', tokenWithoutEmail)
+      .set('token', token)
   })
 
   it('POST /user/signup', async () => {
